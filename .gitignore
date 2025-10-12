@@ -73,8 +73,15 @@ playground.xcworkspace
 Packages/
 Package.pins
 Package.resolved
-*.xcodeproj
+# Ignore xcodeproj at root (SPM-generated), but allow in Examples/
+/*.xcodeproj
 .build/
+
+# Example App - ignore build artifacts but keep project
+Examples/**/xcuserdata/
+Examples/**/DerivedData/
+Examples/**/.swiftpm/
+Examples/**/build/
 
 ### Xcode ###
 xcuserdata
