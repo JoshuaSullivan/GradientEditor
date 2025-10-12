@@ -39,17 +39,17 @@ This document outlines the comprehensive implementation plan for the GradientEdi
 - Side-by-side layout for regular width
 - Position entry validation (0.0-1.0 range)
 
-### 🔨 Current Phase: Phase 4 - Accessibility Implementation
-Next up: Implementing VoiceOver support and Dynamic Type
+### 🔨 Current Phase: Phase 4 - Example App
+Next up: Creating a functional example app for manual testing and demonstration
 
 ### 🎯 Remaining Work
 Phases 1-3 complete! Key remaining tasks:
 - ✅ Gradient preview orientation support (Phase 2 - DONE)
 - ✅ Zoom/pan functionality (Phase 2 - DONE)
 - ✅ Size class adaptation (Phase 3 - DONE)
-- ❌ Accessibility needs implementation in views (Phase 4)
-- ❌ No example app (Phase 6)
-- ❌ Minimal testing (Phase 5)
+- ❌ No example app (Phase 4 - NEXT)
+- ❌ Accessibility needs implementation in views (Phase 5)
+- ❌ Minimal testing (Phase 6)
 - ❌ Documentation needs completion (Phase 7)
 
 ---
@@ -181,11 +181,54 @@ Phases 1-3 complete! Key remaining tasks:
 
 ---
 
-## Phase 4: Accessibility Implementation
+## Phase 4: Example App
+
+**Goal:** Create a functional example app for testing and demonstration
+
+**Note:** Example app must follow SPM best practices - it should NOT be compiled when the library is used as a dependency.
+
+### 4.1 App Target Setup
+- [ ] Design example app structure following SPM best practices (Examples/ folder or conditional compilation)
+- [ ] Create example app target/project structure
+- [ ] Set up app structure (App, Scenes, Views)
+- [ ] Configure app metadata (Info.plist, icons, etc.)
+- [ ] Ensure app builds and runs on device
+- [ ] Verify it's not compiled when package is used as dependency
+
+### 4.2 Scheme List View
+- [ ] Create main list view showing all presets
+- [ ] Display ColorScheme name and description
+- [ ] Show gradient preview thumbnail for each scheme
+- [ ] Make list items tappable
+- [ ] Add proper navigation structure
+
+### 4.3 Editor Integration
+- [ ] Launch GradientEditView when scheme is tapped
+- [ ] Handle completion callback (save edited gradient)
+- [ ] Handle error/cancel scenarios
+- [ ] Test full workflow on device
+
+### 4.4 Example App Features
+- [ ] Add ability to save custom gradients
+- [ ] Add ability to share gradients (export JSON)
+- [ ] Add ability to import gradients from JSON
+- [ ] Add basic settings or about screen
+
+**Deliverables:**
+- Functional example app embedded in package
+- Demonstrates all package features
+- Can be used for manual testing
+- Serves as integration reference for developers
+
+**Estimated Effort:** 3-4 days
+
+---
+
+## Phase 5: Accessibility Implementation
 
 **Goal:** Ensure full accessibility compliance per Apple HIG
 
-### 4.1 VoiceOver Support
+### 5.1 VoiceOver Support
 - [ ] Add accessibility labels to all interactive elements
 - [ ] Add accessibility hints where actions aren't obvious
 - [ ] Set appropriate accessibility traits (button, adjustable, etc.)
@@ -193,19 +236,19 @@ Phases 1-3 complete! Key remaining tasks:
 - [ ] Ensure custom gestures work with VoiceOver
 - [ ] Provide accessibility actions for common operations
 
-### 4.2 Dynamic Type Support
+### 5.2 Dynamic Type Support
 - [ ] Use scalable fonts throughout UI
 - [ ] Test UI layout with largest accessibility sizes
 - [ ] Adjust layouts to accommodate text scaling
 - [ ] Ensure no text truncation at large sizes
 
-### 4.3 Other Accessibility Features
+### 5.3 Other Accessibility Features
 - [ ] Support Reduce Motion preference (adjust animations)
 - [ ] Support high contrast modes
 - [ ] Ensure sufficient color contrast ratios
 - [ ] Test with Color Filters enabled
 
-### 4.4 Accessibility Testing
+### 5.4 Accessibility Testing
 - [ ] Test all features with VoiceOver
 - [ ] Test with Dynamic Type at various sizes
 - [ ] Test with Reduce Motion enabled
@@ -221,11 +264,11 @@ Phases 1-3 complete! Key remaining tasks:
 
 ---
 
-## Phase 5: Testing Infrastructure
+## Phase 6: Testing Infrastructure
 
 **Goal:** Establish comprehensive test coverage using Swift Testing
 
-### 5.1 Model Tests
+### 6.1 Model Tests
 - [ ] Test ColorStop creation, equality, comparison
 - [ ] Test ColorStopType encoding/decoding
 - [ ] Test ColorMap creation and manipulation
@@ -233,7 +276,7 @@ Phases 1-3 complete! Key remaining tasks:
 - [ ] Test CodableColor conversions
 - [ ] Test SendableColor thread safety
 
-### 5.2 View Model Tests
+### 6.2 View Model Tests
 - [ ] Test GradientEditViewModel state management
 - [ ] Test stop addition, removal, update
 - [ ] Test selection logic
@@ -242,20 +285,20 @@ Phases 1-3 complete! Key remaining tasks:
 - [ ] Test duplicate logic
 - [ ] Test position validation
 
-### 5.3 UI Logic Tests
+### 6.3 UI Logic Tests
 - [ ] Test geometry calculations for orientation
 - [ ] Test zoom calculations
 - [ ] Test pan offset calculations
 - [ ] Test stop positioning logic
 - [ ] Test gesture coordination logic
 
-### 5.4 Integration Tests
+### 6.4 Integration Tests
 - [ ] Test complete editing workflows
 - [ ] Test data persistence (encode/decode)
 - [ ] Test undo/redo if implemented
 - [ ] Test state restoration
 
-### 5.5 UI Tests (if feasible)
+### 6.5 UI Tests (if feasible)
 - [ ] Test basic interaction flows
 - [ ] Test accessibility features
 - [ ] Test on multiple device configurations
@@ -267,45 +310,6 @@ Phases 1-3 complete! Key remaining tasks:
 - CI-ready test suite
 
 **Estimated Effort:** 5-6 days
-
----
-
-## Phase 6: Example App
-
-**Goal:** Create a functional example app for testing and demonstration
-
-### 6.1 App Target Setup
-- [ ] Create example app target in Package.swift
-- [ ] Set up app structure (App, Scenes, Views)
-- [ ] Configure app metadata (Info.plist, icons, etc.)
-- [ ] Ensure app builds and runs on device
-
-### 6.2 Scheme List View
-- [ ] Create main list view showing all presets
-- [ ] Display ColorScheme name and description
-- [ ] Show gradient preview thumbnail for each scheme
-- [ ] Make list items tappable
-- [ ] Add proper navigation structure
-
-### 6.3 Editor Integration
-- [ ] Launch GradientEditView when scheme is tapped
-- [ ] Handle completion callback (save edited gradient)
-- [ ] Handle error/cancel scenarios
-- [ ] Test full workflow on device
-
-### 6.4 Example App Features
-- [ ] Add ability to save custom gradients
-- [ ] Add ability to share gradients (export JSON)
-- [ ] Add ability to import gradients from JSON
-- [ ] Add basic settings or about screen
-
-**Deliverables:**
-- Functional example app embedded in package
-- Demonstrates all package features
-- Can be used for manual testing
-- Serves as integration reference for developers
-
-**Estimated Effort:** 3-4 days
 
 ---
 
@@ -420,9 +424,9 @@ Phases 1-3 complete! Key remaining tasks:
 - ✅ Phase 1: Core Architecture & Foundation (1 day - COMPLETED)
 - ✅ Phase 2: Gradient Preview Enhancement (1 day - COMPLETED)
 - ✅ Phase 3: Stop Editor Enhancement (<1 day - COMPLETED)
-- 🔨 Phase 4: Accessibility Implementation (3-4 days - NEXT)
-- ⏳ Phase 5: Testing Infrastructure (5-6 days)
-- ⏳ Phase 6: Example App (3-4 days)
+- 🔨 Phase 4: Example App (3-4 days - NEXT)
+- ⏳ Phase 5: Accessibility Implementation (3-4 days)
+- ⏳ Phase 6: Testing Infrastructure (5-6 days)
 - ⏳ Phase 7: API Refinement & Documentation (3-4 days)
 - ⏳ Phase 8: Polish & Release Preparation (3-4 days)
 
