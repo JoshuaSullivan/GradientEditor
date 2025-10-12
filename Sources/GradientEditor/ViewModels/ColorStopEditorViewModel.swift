@@ -10,6 +10,7 @@ public class ColorStopEditorViewModel {
         case prev
         case next
         case delete
+        case duplicate
         case close
     }
     
@@ -32,7 +33,15 @@ public class ColorStopEditorViewModel {
     }
     
     public var position: CGFloat = 0.5 {
-        didSet { sendUpdatedColorStop() }
+        didSet {
+            // Clamp position to valid range [0.0, 1.0]
+            if position < 0.0 {
+                position = 0.0
+            } else if position > 1.0 {
+                position = 1.0
+            }
+            sendUpdatedColorStop()
+        }
     }
     
     public var canDelete: Bool = true
@@ -91,5 +100,9 @@ public class ColorStopEditorViewModel {
     
     public func deleteTapped() {
         _actionPublisher.send(.delete)
+    }
+
+    public func duplicateTapped() {
+        _actionPublisher.send(.duplicate)
     }
 }

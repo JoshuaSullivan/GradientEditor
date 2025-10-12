@@ -10,8 +10,10 @@ struct GradientEditView: View {
     @GestureState private var panTranslation: CGSize = .zero
     @State private var baseZoom: CGFloat = 1.0
     @State private var basePan: CGFloat = 0.0
+    @State private var showEditorSheet = false
 
     @Environment(\.self) private var environment
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     /// Computed layout geometry based on current view size and zoom/pan state.
     private var geometry: GradientLayoutGeometry {
@@ -24,13 +26,25 @@ struct GradientEditView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            ZStack {
-                if viewModel.isEditingStop {
-                    // Show editor when a stop is selected
-                    editorView
-                } else {
-                    // Show gradient and controls
+            Group {
+                if isCompactWidth {
+                    // Compact: show gradient, present editor as sheet
                     gradientView(geometry: geometry)
+                        .sheet(isPresented: $showEditorSheet) {
+                            editorView
+                                .presentationDetents([.medium, .large])
+                        }
+                } else {
+                    // Regular: show side-by-side
+                    HStack(spacing: 0) {
+                        gradientView(geometry: geometry)
+
+                        if viewModel.isEditingStop {
+                            Divider()
+                            editorView
+                                .frame(width: 300)
+                        }
+                    }
                 }
             }
             .onAppear {
@@ -40,9 +54,20 @@ struct GradientEditView: View {
             .onChange(of: proxy.size) { _, newSize in
                 viewSize = newSize
             }
+            .onChange(of: viewModel.isEditingStop) { _, isEditing in
+                if isCompactWidth {
+                    showEditorSheet = isEditing
+                }
+            }
         }
         .padding()
         .animation(.easeInOut, value: viewModel.isEditingStop)
+    }
+
+    // MARK: - Computed Properties
+
+    private var isCompactWidth: Bool {
+        horizontalSizeClass == .compact
     }
 
     // MARK: - Gradient View
@@ -73,8 +98,10 @@ struct GradientEditView: View {
 
             Spacer()
 
-            // Controls
-            controlButtons
+            // Controls (only show if not editing or if regular width)
+            if !viewModel.isEditingStop || !isCompactWidth {
+                controlButtons
+            }
         }
     }
 
@@ -95,10 +122,12 @@ struct GradientEditView: View {
 
             Spacer()
 
-            // Controls
-            HStack {
-                controlButtons
-                Spacer()
+            // Controls (only show if not editing or if regular width)
+            if !viewModel.isEditingStop || !isCompactWidth {
+                HStack {
+                    controlButtons
+                    Spacer()
+                }
             }
         }
     }

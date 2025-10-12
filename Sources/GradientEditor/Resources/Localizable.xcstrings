@@ -78,6 +78,17 @@
         }
       }
     },
+    "editor_duplicate_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate"
+          }
+        }
+      }
+    },
     "editor_picker_title" : {
       "extractionState" : "manual",
       "localizations" : {

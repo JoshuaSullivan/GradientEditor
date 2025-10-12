@@ -67,13 +67,22 @@ struct ColorStopEditorView: View {
                     Text(.editorSecondColorLabel)
                 }
             }
-            Button(role: .destructive) {
-                viewModel.deleteTapped()
-            } label: {
-                Text(.editorDeleteButton)
+            HStack(spacing: 20) {
+                Button {
+                    viewModel.duplicateTapped()
+                } label: {
+                    Text(.editorDuplicateButton)
+                }
+                .buttonStyle(.bordered)
+
+                Button(role: .destructive) {
+                    viewModel.deleteTapped()
+                } label: {
+                    Text(.editorDeleteButton)
+                }
+                .buttonStyle(.bordered)
+                .disabled(!viewModel.canDelete)
             }
-            .buttonStyle(BorderlessButtonStyle())
-            .disabled(!viewModel.canDelete)
 
             Spacer()
         }

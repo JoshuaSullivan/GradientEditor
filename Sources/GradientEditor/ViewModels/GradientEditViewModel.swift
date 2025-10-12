@@ -162,10 +162,42 @@ public class GradientEditViewModel {
             selectNextStop()
         case .delete:
             deleteSelectedStop()
+        case .duplicate:
+            duplicateSelectedStop()
         case .close:
             isEditingStop = false
             selectedStop = nil
         }
+    }
+
+    private func duplicateSelectedStop() {
+        guard let currentStop = selectedStop else { return }
+
+        // Calculate position for the duplicate
+        let sortedStops = colorStops
+        guard let currentIndex = sortedStops.firstIndex(of: currentStop) else { return }
+
+        let newPosition: CGFloat
+        if currentIndex < sortedStops.count - 1 {
+            // Not the last stop: place halfway to next stop
+            let nextStop = sortedStops[currentIndex + 1]
+            newPosition = (currentStop.position + nextStop.position) / 2.0
+        } else if currentIndex > 0 {
+            // Last stop: place halfway to previous stop
+            let prevStop = sortedStops[currentIndex - 1]
+            newPosition = (prevStop.position + currentStop.position) / 2.0
+        } else {
+            // Only one stop: place at midpoint
+            newPosition = 0.5
+        }
+
+        // Create duplicate with new position
+        let duplicateStop = ColorStop(position: newPosition, type: currentStop.type)
+        stops.insert(duplicateStop)
+        dragHandleViewModels.append(DragHandleViewModel(colorStop: duplicateStop))
+
+        // Select the new stop
+        activate(stop: duplicateStop)
     }
     
     public func saveGradient() {
