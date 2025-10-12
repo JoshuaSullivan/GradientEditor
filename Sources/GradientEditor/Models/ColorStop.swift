@@ -1,21 +1,18 @@
 import SwiftUI
 
 nonisolated
-public struct ColorStop: Identifiable, Equatable, Hashable, Comparable, Codable {
+public struct ColorStop: Identifiable, Equatable, Hashable, Comparable, Codable, Sendable {
     
     public let id: String
     
     public var position: CGFloat
     
     public var type: ColorStopType
-    
-    public private(set) var environment: EnvironmentValues?
-    
-    public init(id: String = UUID().uuidString, position: CGFloat = 0.0, type: ColorStopType, environment: EnvironmentValues? = nil) {
+        
+    public init(id: String = UUID().uuidString, position: CGFloat = 0.0, type: ColorStopType) {
         self.id = id
         self.position = position
         self.type = type
-        self.environment = environment
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -28,14 +25,6 @@ public struct ColorStop: Identifiable, Equatable, Hashable, Comparable, Codable 
     
     public static func < (lhs: ColorStop, rhs: ColorStop) -> Bool {
         lhs.position < rhs.position
-    }
-    
-    mutating func set(environment: EnvironmentValues?) {
-        self.environment = environment
-    }
-    
-    public func setting(environment: EnvironmentValues?) -> ColorStop {
-        return ColorStop(id: id, position: position, type: type, environment: environment)
     }
     
     // MARK: - Codable

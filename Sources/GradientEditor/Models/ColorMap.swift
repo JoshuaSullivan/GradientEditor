@@ -1,7 +1,7 @@
 import Foundation
 
 /// A custom gradient that can be applied in Landmass.
-public struct ColorMap: Identifiable, Equatable, Hashable, Codable {
+public struct ColorMap: Identifiable, Equatable, Hashable, Codable, Sendable {
     /// The unique ID of the gradient.
     public let id: String
         

@@ -2,7 +2,7 @@ import CoreImage
 import SwiftUI
 
 /// Color Presets
-public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparable {
+public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparable, Sendable {
     /// Unique identifier.
     public let id: UUID
     

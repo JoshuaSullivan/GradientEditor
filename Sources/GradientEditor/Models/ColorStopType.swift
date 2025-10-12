@@ -1,7 +1,7 @@
 import CoreGraphics
 
 nonisolated
-public enum ColorStopType: Codable {
+public enum ColorStopType: Codable, Sendable {
     
     case single(CGColor)
     case dual(CGColor, CGColor)

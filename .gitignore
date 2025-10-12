@@ -80,5 +80,8 @@ Package.resolved
 xcuserdata
 .swiftpm/
 
+### VSCode ###
+.vscode/
+
 ### Claude ###
 .claude/

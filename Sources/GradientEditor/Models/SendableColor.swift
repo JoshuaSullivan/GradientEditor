@@ -1,4 +1,4 @@
-import UIKit
+import CoreGraphics
 
 /// A Sendable proxy for CGColors.
 public struct SendableColor: Sendable {
