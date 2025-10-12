@@ -2,11 +2,21 @@ import SwiftUI
 import Combine
 
 @Observable
-public class GradientEditViewModel: Equatable, Hashable {
-    
+@MainActor
+public class GradientEditViewModel {
+
     /// ID for uniqueness.
     let id: String = UUID().uuidString
-    
+
+    /// Completion handler called when editing is complete.
+    public var onComplete: (@Sendable (GradientEditorResult) -> Void)?
+
+    /// Current zoom level (1.0 = 100%, 4.0 = 400%).
+    public var zoomLevel: CGFloat = 1.0
+
+    /// Current pan offset (0.0 - 1.0, where 0.5 is centered).
+    public var panOffset: CGFloat = 0.0
+
     public var gradientFill: LinearGradient {
         let gradStops = colorStops.flatMap { cStop in
             switch cStop.type {
@@ -44,12 +54,13 @@ public class GradientEditViewModel: Equatable, Hashable {
     
     private var subs = Set<AnyCancellable>()
     
-    public init(scheme: ColorScheme) {
-        
+    public init(scheme: ColorScheme, onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil) {
+
         self.scheme = scheme
         self.stops = Set(scheme.colorMap.stops)
         dragHandleViewModels = scheme.colorMap.stops.map { DragHandleViewModel(colorStop: $0) }
-        
+        self.onComplete = onComplete
+
         colorStopViewModel.actionPublisher
             .sink(receiveValue: handle(action:))
             .store(in: &subs)
@@ -157,6 +168,34 @@ public class GradientEditViewModel: Equatable, Hashable {
         }
     }
     
+    public func saveGradient() {
+        let gradient = ColorMap(stops: colorStops)
+        onComplete?(.saved(gradient))
+    }
+
+    public func cancelEditing() {
+        onComplete?(.cancelled)
+    }
+
+    /// Updates the zoom level, clamping to valid range (1.0 - 4.0).
+    public func updateZoom(_ newZoom: CGFloat) {
+        zoomLevel = max(1.0, min(4.0, newZoom))
+
+        // Reset pan if zoom is back to 100%
+        if zoomLevel == 1.0 {
+            panOffset = 0.0
+        }
+    }
+
+    /// Updates the pan offset, clamping to valid range (0.0 - 1.0).
+    public func updatePan(_ newPan: CGFloat) {
+        guard zoomLevel > 1.0 else {
+            panOffset = 0.0
+            return
+        }
+        panOffset = max(0.0, min(1.0, newPan))
+    }
+
     public func exportGradient() {
         let grad = ColorMap(stops: colorStops)
         do {
@@ -178,13 +217,4 @@ public class GradientEditViewModel: Equatable, Hashable {
         }
     }
     
-    // MARK: - Equatable & Hashable
-    
-    public static func == (lhs: GradientEditViewModel, rhs: GradientEditViewModel) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
 }

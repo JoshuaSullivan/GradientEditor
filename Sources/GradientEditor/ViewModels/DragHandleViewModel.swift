@@ -1,12 +1,13 @@
 import SwiftUI
 
 @Observable
+@MainActor
 public class DragHandleViewModel: Identifiable {
     public let id: String
     public private(set) var colorStopType: ColorStopType
     public private(set) var position: CGFloat
     
-    init(colorStop: ColorStop) {
+    public init(colorStop: ColorStop) {
         self.id = colorStop.id
         self.colorStopType = colorStop.type
         self.position = colorStop.position

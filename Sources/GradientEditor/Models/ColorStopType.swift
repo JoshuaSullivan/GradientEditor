@@ -9,9 +9,9 @@ public enum ColorStopType: Codable, Sendable {
     public var title: String {
         switch self {
         case .single:
-            return "Single"
+            return LocalizedString.colorStopTypeSingle
         case .dual:
-            return "Dual"
+            return LocalizedString.colorStopTypeDual
         }
     }
     

@@ -1,0 +1,387 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "color_stop_type_single" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Single"
+          }
+        }
+      }
+    },
+    "color_stop_type_dual" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dual"
+          }
+        }
+      }
+    },
+    "editor_position_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position:"
+          }
+        }
+      }
+    },
+    "editor_color_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        }
+      }
+    },
+    "editor_first_color_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First Color"
+          }
+        }
+      }
+    },
+    "editor_second_color_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second Color"
+          }
+        }
+      }
+    },
+    "editor_delete_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "editor_picker_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color Stop Type"
+          }
+        }
+      }
+    },
+    "error_insufficient_stops" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least 2 color stops are required to create a gradient."
+          }
+        }
+      }
+    },
+    "error_invalid_position" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color stop position %@ is invalid. Position must be between 0 and 1."
+          }
+        }
+      }
+    },
+    "error_encoding_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to save the gradient."
+          }
+        }
+      }
+    },
+    "error_decoding_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load the gradient."
+          }
+        }
+      }
+    },
+    "error_recovery_add_stops" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add at least one more color stop before saving."
+          }
+        }
+      }
+    },
+    "error_recovery_adjust_position" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust the color stop position to be within the valid range."
+          }
+        }
+      }
+    },
+    "error_recovery_try_again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please try again."
+          }
+        }
+      }
+    },
+    "a11y_gradient_preview" : {
+      "comment" : "Accessibility label for the gradient preview area",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gradient preview"
+          }
+        }
+      }
+    },
+    "a11y_add_stop_button" : {
+      "comment" : "Accessibility label for add color stop button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add color stop"
+          }
+        }
+      }
+    },
+    "a11y_save_button" : {
+      "comment" : "Accessibility label for save gradient button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save gradient"
+          }
+        }
+      }
+    },
+    "a11y_cancel_button" : {
+      "comment" : "Accessibility label for cancel editing button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "a11y_export_button" : {
+      "comment" : "Accessibility label for export gradient button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export gradient"
+          }
+        }
+      }
+    },
+    "a11y_stop_editor_close" : {
+      "comment" : "Close color stop editor",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close editor"
+          }
+        }
+      }
+    },
+    "a11y_stop_editor_prev" : {
+      "comment" : "Previous color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous stop"
+          }
+        }
+      }
+    },
+    "a11y_stop_editor_next" : {
+      "comment" : "Next color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next stop"
+          }
+        }
+      }
+    },
+    "a11y_stop_editor_delete" : {
+      "comment" : "Delete color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete stop"
+          }
+        }
+      }
+    },
+    "a11y_stop_editor_duplicate" : {
+      "comment" : "Duplicate color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_add_stop" : {
+      "comment" : "Hint: Double tap to add a new color stop to the gradient",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to add a new color stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_save" : {
+      "comment" : "Hint: Double tap to save the gradient and close the editor",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to save and close"
+          }
+        }
+      }
+    },
+    "a11y_hint_cancel" : {
+      "comment" : "Hint: Double tap to cancel editing and discard changes",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to cancel and discard changes"
+          }
+        }
+      }
+    },
+    "a11y_hint_color_stop" : {
+      "comment" : "Hint: Double tap to edit this color stop, or drag to adjust its position",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to edit, or drag to adjust position"
+          }
+        }
+      }
+    },
+    "a11y_hint_prev_stop" : {
+      "comment" : "Hint: Double tap to edit the previous color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to edit previous stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_next_stop" : {
+      "comment" : "Hint: Double tap to edit the next color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to edit next stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_delete_stop" : {
+      "comment" : "Hint: Double tap to delete this color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to delete this stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_duplicate_stop" : {
+      "comment" : "Hint: Double tap to create a copy of this color stop",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to duplicate this stop"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

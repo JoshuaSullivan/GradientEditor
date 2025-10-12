@@ -2,6 +2,7 @@ import SwiftUI
 import Combine
 
 @Observable
+@MainActor
 public class ColorStopEditorViewModel {
     
     public enum Action {
@@ -38,7 +39,7 @@ public class ColorStopEditorViewModel {
     
     private var id: String
     
-    init(colorStop: ColorStop) {
+    public init(colorStop: ColorStop) {
         self.id = colorStop.id
         self.position = colorStop.position
         switch colorStop.type {

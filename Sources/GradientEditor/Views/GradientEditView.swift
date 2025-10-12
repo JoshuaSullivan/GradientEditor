@@ -1,81 +1,186 @@
 import SwiftUI
 
 struct GradientEditView: View {
-    
-    let viewModel: GradientEditViewModel
-    
-    @State var selectedColor: CGColor = .green
-    
+
+    @Bindable var viewModel: GradientEditViewModel
+
+    @State private var selectedColor: CGColor = .green
+    @State private var viewSize: CGSize = .zero
+    @GestureState private var magnification: CGFloat = 1.0
+    @GestureState private var panTranslation: CGSize = .zero
+    @State private var baseZoom: CGFloat = 1.0
+    @State private var basePan: CGFloat = 0.0
+
     @Environment(\.self) private var environment
-    
+
+    /// Computed layout geometry based on current view size and zoom/pan state.
+    private var geometry: GradientLayoutGeometry {
+        GradientLayoutGeometry(
+            viewSize: viewSize,
+            zoomLevel: viewModel.zoomLevel,
+            panOffset: viewModel.panOffset
+        )
+    }
+
     var body: some View {
-        GeometryReader { geometry in
-            
-            let w = geometry.size.width
-            let h = geometry.size.height
-            
-            HStack(alignment: .top, spacing: 0) {
-                Spacer()
-                    .frame(width: viewModel.isEditingStop ? 0 : (w - 200) / 2)
-                ZStack(alignment: .top) {
-                    Rectangle()
-                        .fill(viewModel.gradientFill)
-                        .frame(width: 100)
-                    Rectangle()
-                        .fill(Color.white)
-                        .frame(width: 100, height: 1)
-                        .offset(y: h * viewModel.editPosition)
-                        .opacity(viewModel.isEditingStop ? 0.8 : 0)
-                }
-                
+        GeometryReader { proxy in
+            ZStack {
                 if viewModel.isEditingStop {
-                    ColorStopEditorView(viewModel: viewModel.colorStopViewModel)
+                    // Show editor when a stop is selected
+                    editorView
                 } else {
-                    ZStack(alignment: .top) {
-                        ForEach(viewModel.dragHandleViewModels) { vm in
-                            DragHandle(viewModel: vm)
-                                .offset(y: vm.position * h)
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged({ value in
-                                            let y: CGFloat = max(0, min((value.location.y / h), 1))
-                                            viewModel.update(colorStopId: vm.id, position: y)
-                                        })
-                                )
-                                .gesture(
-                                    TapGesture()
-                                        .onEnded({
-                                            viewModel.stopTapped(vm.id)
-                                        })
-                                )
-                        }
-                    }
-                    .opacity(viewModel.isEditingStop ? 0 : 1)
-                    Spacer()
-                    VStack {
-                        Button {
-                            viewModel.exportGradient()
-                        } label: {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.title)
-                        }
-                        Spacer()
-                        Button {
-                            viewModel.addTapped()
-                        } label: {
-                            Image(systemName: "plus.circle")
-                                .font(.title)
-                        }
-                    }
+                    // Show gradient and controls
+                    gradientView(geometry: geometry)
                 }
+            }
+            .onAppear {
+                viewModel.environment = environment
+                viewSize = proxy.size
+            }
+            .onChange(of: proxy.size) { _, newSize in
+                viewSize = newSize
             }
         }
         .padding()
         .animation(.easeInOut, value: viewModel.isEditingStop)
-        .onAppear() {
-            viewModel.environment = environment
+    }
+
+    // MARK: - Gradient View
+
+    @ViewBuilder
+    private func gradientView(geometry: GradientLayoutGeometry) -> some View {
+        if geometry.orientation == .vertical {
+            verticalGradientLayout(geometry: geometry)
+        } else {
+            horizontalGradientLayout(geometry: geometry)
         }
     }
+
+    @ViewBuilder
+    private func verticalGradientLayout(geometry: GradientLayoutGeometry) -> some View {
+        HStack(alignment: .top, spacing: 0) {
+            Spacer()
+
+            // Gradient strip with stops
+            GradientStripView(
+                viewModel: viewModel,
+                geometry: geometry,
+                onStopDrag: handleStopDrag,
+                onStopTap: handleStopTap
+            )
+            .gesture(pinchGesture)
+            .gesture(panGesture(geometry: geometry))
+
+            Spacer()
+
+            // Controls
+            controlButtons
+        }
+    }
+
+    @ViewBuilder
+    private func horizontalGradientLayout(geometry: GradientLayoutGeometry) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer()
+
+            // Gradient strip with stops
+            GradientStripView(
+                viewModel: viewModel,
+                geometry: geometry,
+                onStopDrag: handleStopDrag,
+                onStopTap: handleStopTap
+            )
+            .gesture(pinchGesture)
+            .gesture(panGesture(geometry: geometry))
+
+            Spacer()
+
+            // Controls
+            HStack {
+                controlButtons
+                Spacer()
+            }
+        }
+    }
+
+    // MARK: - Editor View
+
+    private var editorView: some View {
+        ColorStopEditorView(viewModel: viewModel.colorStopViewModel)
+    }
+
+    // MARK: - Control Buttons
+
+    private var controlButtons: some View {
+        VStack(spacing: 20) {
+            Button {
+                viewModel.exportGradient()
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.title)
+            }
+
+            Button {
+                viewModel.addTapped()
+            } label: {
+                Image(systemName: "plus.circle")
+                    .font(.title)
+            }
+        }
+    }
+
+    // MARK: - Handle Interactions
+
+    private func handleStopDrag(_ handleVM: DragHandleViewModel, coord: CGFloat) {
+        let newPosition = geometry.gradientPosition(from: coord)
+        viewModel.update(colorStopId: handleVM.id, position: newPosition)
+    }
+
+    private func handleStopTap(_ handleVM: DragHandleViewModel) {
+        viewModel.stopTapped(handleVM.id)
+    }
+
+    // MARK: - Gestures
+
+    private var pinchGesture: some Gesture {
+        MagnificationGesture()
+            .updating($magnification) { value, state, _ in
+                state = value
+            }
+            .onChanged { value in
+                let newZoom = baseZoom * value
+                viewModel.updateZoom(newZoom)
+            }
+            .onEnded { value in
+                baseZoom = viewModel.zoomLevel
+            }
+    }
+
+    private func panGesture(geometry: GradientLayoutGeometry) -> some Gesture {
+        DragGesture(minimumDistance: 10)
+            .updating($panTranslation) { value, state, _ in
+                state = value.translation
+            }
+            .onChanged { value in
+                guard viewModel.zoomLevel > 1.0 else { return }
+
+                let translation: CGFloat
+                if geometry.orientation == .vertical {
+                    translation = value.translation.height
+                } else {
+                    translation = value.translation.width
+                }
+
+                // Convert translation to pan offset change
+                let panChange = -translation / geometry.stripLength
+                let newPan = basePan + panChange
+                viewModel.updatePan(newPan)
+            }
+            .onEnded { _ in
+                basePan = viewModel.panOffset
+            }
+    }
+
 }
 
 #Preview {

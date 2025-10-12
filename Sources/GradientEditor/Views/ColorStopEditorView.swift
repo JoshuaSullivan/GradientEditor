@@ -41,26 +41,36 @@ struct ColorStopEditorView: View {
             .padding(.bottom)
             HStack {
                 Spacer()
-                Text("Position:")
+                Text(.editorPositionLabel)
                 TextField("Position", value: $viewModel.position, formatter: formatter)
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: 100)
                 Spacer()
             }
-            Picker("Color Stop Type", selection: $viewModel.isSingleColorStop) {
-                Text("Single").tag(true)
-                Text("Dual").tag(false)
+            Picker(selection: $viewModel.isSingleColorStop) {
+                Text(.colorStopTypeSingle).tag(true)
+                Text(.colorStopTypeDual).tag(false)
+            } label: {
+                Text(.editorPickerTitle)
             }
             .pickerStyle(.segmented)
-            
+
             if viewModel.isSingleColorStop {
-                ColorPicker("Color", selection: $viewModel.firstcolor)
+                ColorPicker(selection: $viewModel.firstcolor) {
+                    Text(.editorColorLabel)
+                }
             } else {
-                ColorPicker("First Color", selection:  $viewModel.firstcolor)
-                ColorPicker("Second Color", selection: $viewModel.secondColor)
+                ColorPicker(selection:  $viewModel.firstcolor) {
+                    Text(.editorFirstColorLabel)
+                }
+                ColorPicker(selection: $viewModel.secondColor) {
+                    Text(.editorSecondColorLabel)
+                }
             }
-            Button("Delete", role: .destructive) {
+            Button(role: .destructive) {
                 viewModel.deleteTapped()
+            } label: {
+                Text(.editorDeleteButton)
             }
             .buttonStyle(BorderlessButtonStyle())
             .disabled(!viewModel.canDelete)
