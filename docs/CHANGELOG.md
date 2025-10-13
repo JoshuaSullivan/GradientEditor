@@ -4,6 +4,43 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2025-10-13
+
+### Phase 4: Example App - Gesture Refinement
+
+**Gesture Conflict Resolution:**
+- Fixed zoom transform to properly display gradient at all zoom levels
+  - Gradient stops now transform based on visible range
+  - Added color interpolation at visible range edges
+  - Handles edge cases when stops are outside visible range
+- Fixed pan gesture to update smoothly during drag
+  - Added active state variables (`activeZoom`, `activePan`) for immediate visual feedback
+  - Synchronized with view model's zoom/pan on gesture end
+- Fixed handle dragging coordinate space issues
+  - Added named "gradientStrip" coordinate space for accurate coordinate conversion
+  - Stores current geometry to ensure consistent coordinate-to-position conversions
+- Separated gesture hit areas to prevent conflicts
+  - Moved pan and pinch gestures from entire ZStack to gradient Rectangle only
+  - Drag handles no longer trigger pan gesture when touched
+  - Eliminates gradient "slip" when dragging handles at high zoom levels
+- Fixed landscape handle alignment with adjusted offsets for rotated handles
+- Fixed blank screen on first gradient selection using item-based sheet presentation
+
+**Model Updates:**
+- Added `startColor` and `endColor` computed properties to `ColorStopType` for interpolation support
+
+**Files Modified:**
+- `Views/GradientStripView.swift` - Added zoom transform logic, separated gesture hit areas
+- `Views/GradientEditView.swift` - Added active gesture state tracking, geometry management
+- `Views/DragHandle.swift` - Adjusted offsets for landscape orientation
+- `Models/ColorStopType.swift` - Added interpolation helper properties
+- `Models/GradientLayoutGeometry.swift` - Added safety for division by zero
+- `Examples/GradientEditorExample/SchemeListView.swift` - Fixed sheet presentation pattern
+
+**Status:** Gesture system working flawlessly. Ready for comprehensive testing.
+
+---
+
 ## 2025-10-12
 
 ### Phase 3: Stop Editor Enhancement - COMPLETED ✅
