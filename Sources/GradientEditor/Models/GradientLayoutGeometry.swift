@@ -28,7 +28,9 @@ struct GradientLayoutGeometry {
 
     /// The length of the gradient strip (the scrollable axis).
     var stripLength: CGFloat {
-        orientation == .vertical ? viewSize.height : viewSize.width
+        let length = orientation == .vertical ? viewSize.height : viewSize.width
+        // Ensure we never return zero to avoid division by zero
+        return max(length, 1.0)
     }
 
     /// The visible length of the gradient after zoom is applied.
@@ -98,8 +100,10 @@ struct GradientLayoutGeometry {
 
         switch orientation {
         case .vertical:
-            return CGSize(width: 0, height: viewCoord)
+            // Handles are aligned to trailing edge in vertical mode
+            return CGSize(width: stripWidth, height: viewCoord)
         case .horizontal:
+            // Handles are aligned to top edge in horizontal mode
             return CGSize(width: viewCoord, height: 0)
         }
     }

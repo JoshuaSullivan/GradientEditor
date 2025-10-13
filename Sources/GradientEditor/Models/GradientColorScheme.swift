@@ -2,7 +2,7 @@ import CoreImage
 import SwiftUI
 
 /// Color Presets
-public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparable, Sendable {
+public struct GradientColorScheme: Identifiable, Equatable, Codable, Hashable, Comparable, Sendable {
     /// Unique identifier.
     public let id: UUID
     
@@ -15,7 +15,7 @@ public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparabl
     /// The color map for the color scheme.
     public let colorMap: ColorMap
     
-    /// Create a new instance of ColorScheme.
+    /// Create a new instance of GradientColorScheme.
     /// - Parameters:
     ///   - id: The unique identifier for the color scheme.
     ///   - name: The name of the color scheme.
@@ -32,52 +32,52 @@ public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparabl
         hasher.combine(id)
     }
 
-    public static func < (lhs: ColorScheme, rhs: ColorScheme) -> Bool {
+    public static func < (lhs: GradientColorScheme, rhs: GradientColorScheme) -> Bool {
         return lhs.name < rhs.name
     }
 }
 
 // MARK: - Presets
 
- extension ColorScheme {
+ public extension GradientColorScheme {
     
      // Helper to get all presets
-     static var allPresets: [ColorScheme] {
+     static var allPresets: [GradientColorScheme] {
          [blackAndWhite, wakeIsland, neonRipples, appleTwoRiver, electoralMap, topographic]
      }
     
      // Static presets to replace enum cases
-     static let blackAndWhite = ColorScheme(
+     static let blackAndWhite = GradientColorScheme(
          name: "Black & White",
          description: "A simple, black-and-white color scheme that is good for input into filter effects.",
          colorMap: .blackAndWhite
      )
     
-     static let wakeIsland = ColorScheme(
+     static let wakeIsland = GradientColorScheme(
          name: "Wake Island",
          description: "A tropical island color scheme sampled from photos of Wake Island.",
          colorMap: .wakeIsland
      )
     
-     static let neonRipples = ColorScheme(
+     static let neonRipples = GradientColorScheme(
          name: "Neon Ripples",
          description: "An abstract color set of snaking lines.",
          colorMap: .neonRipples
      )
     
-     static let appleTwoRiver = ColorScheme(
+     static let appleTwoRiver = GradientColorScheme(
          name: "Apple ][ River",
          description: "Inspired by the green CRT monitor that came with the Apple ][ computer.",
          colorMap: .appleTwoRiver
      )
     
-     static let electoralMap = ColorScheme(
+     static let electoralMap = GradientColorScheme(
          name: "Electoral Map",
          description: "Red vs. Blue",
          colorMap: .electoralMap
      )
     
-     static let topographic = ColorScheme(
+     static let topographic = GradientColorScheme(
          name: "Topographic",
          description: "Resembles a topographic map.",
          colorMap: .topographic
@@ -85,24 +85,24 @@ public struct ColorScheme: Identifiable, Equatable, Codable, Hashable, Comparabl
     
      // MARK: - Codable Example Methods
     
-     /// Encode a ColorScheme to JSON data
-     /// - Returns: JSON data representation of the ColorScheme
+     /// Encode a GradientColorScheme to JSON data
+     /// - Returns: JSON data representation of the GradientColorScheme
      func toJSON() throws -> Data {
          let encoder = JSONEncoder()
          encoder.outputFormatting = .prettyPrinted
          return try encoder.encode(self)
      }
     
-     /// Create a ColorScheme from JSON data
+     /// Create a GradientColorScheme from JSON data
      /// - Parameter data: JSON data to decode
-     /// - Returns: A ColorScheme instance
-     static func from(json data: Data) throws -> ColorScheme {
+     /// - Returns: A GradientColorScheme instance
+     static func from(json data: Data) throws -> GradientColorScheme {
          let decoder = JSONDecoder()
-         return try decoder.decode(ColorScheme.self, from: data)
+         return try decoder.decode(GradientColorScheme.self, from: data)
      }
  }
 
- extension ColorMap {
+ public extension ColorMap {
      static let blackAndWhite = ColorMap(stops: [
          ColorStop(position: 0.0, type: .single(.black)),
          ColorStop(position: 1.0, type: .single(.white))

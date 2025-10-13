@@ -2,12 +2,11 @@ import SwiftUI
 import GradientEditor
 
 struct SchemeListView: View {
-    @State private var schemes: [ColorScheme] = ColorScheme.allPresets
-    @State private var selectedScheme: ColorScheme?
-    @State private var showingEditor = false
-    @State private var customSchemes: [ColorScheme] = []
+    @State private var schemes: [GradientColorScheme] = GradientColorScheme.allPresets
+    @State private var selectedScheme: GradientColorScheme?
+    @State private var customSchemes: [GradientColorScheme] = []
 
-    var allSchemes: [ColorScheme] {
+    var allSchemes: [GradientColorScheme] {
         schemes + customSchemes
     }
 
@@ -19,7 +18,6 @@ struct SchemeListView: View {
                         SchemeRow(scheme: scheme)
                             .onTapGesture {
                                 selectedScheme = scheme
-                                showingEditor = true
                             }
                     }
                 }
@@ -30,7 +28,6 @@ struct SchemeListView: View {
                             SchemeRow(scheme: scheme)
                                 .onTapGesture {
                                     selectedScheme = scheme
-                                    showingEditor = true
                                 }
                         }
                         .onDelete { indexSet in
@@ -49,36 +46,33 @@ struct SchemeListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingEditor) {
-                if let scheme = selectedScheme {
-                    EditorView(scheme: scheme) { result in
-                        handleEditorResult(result, for: scheme)
-                    }
+            .sheet(item: $selectedScheme) { scheme in
+                EditorView(scheme: scheme) { result in
+                    handleEditorResult(result, for: scheme)
                 }
             }
         }
     }
 
     private func createNewGradient() {
-        let newScheme = ColorScheme(
+        let newScheme = GradientColorScheme(
             name: "New Gradient",
             description: "A custom gradient",
             colorMap: ColorMap(stops: [
-                ColorStop(position: 0.0, type: .single(.systemBlue)),
-                ColorStop(position: 1.0, type: .single(.systemPurple))
+                ColorStop(position: 0.0, type: .single(.blue)),
+                ColorStop(position: 1.0, type: .single(.purple))
             ])
         )
         selectedScheme = newScheme
-        showingEditor = true
     }
 
-    private func handleEditorResult(_ result: GradientEditorResult, for scheme: ColorScheme) {
-        showingEditor = false
+    private func handleEditorResult(_ result: GradientEditorResult, for scheme: GradientColorScheme) {
+        selectedScheme = nil
 
         switch result {
         case .saved(let colorMap):
             // Create a new scheme with the edited color map
-            let updatedScheme = ColorScheme(
+            let updatedScheme = GradientColorScheme(
                 id: scheme.id,
                 name: scheme.name,
                 description: scheme.description,
@@ -97,13 +91,11 @@ struct SchemeListView: View {
             // Do nothing
             break
         }
-
-        selectedScheme = nil
     }
 }
 
 struct SchemeRow: View {
-    let scheme: ColorScheme
+    let scheme: GradientColorScheme
 
     var body: some View {
         HStack(spacing: 12) {

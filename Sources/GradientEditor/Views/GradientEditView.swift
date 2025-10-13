@@ -1,35 +1,49 @@
 import SwiftUI
 
-struct GradientEditView: View {
+public struct GradientEditView: View {
 
-    @Bindable var viewModel: GradientEditViewModel
+    @Bindable public var viewModel: GradientEditViewModel
 
-    @State private var selectedColor: CGColor = .green
-    @State private var viewSize: CGSize = .zero
     @GestureState private var magnification: CGFloat = 1.0
-    @GestureState private var panTranslation: CGSize = .zero
-    @State private var baseZoom: CGFloat = 1.0
-    @State private var basePan: CGFloat = 0.0
+    @State private var baseZoom: CGFloat
+    @State private var basePan: CGFloat
     @State private var showEditorSheet = false
+    @State private var currentGeometry: GradientLayoutGeometry?
+    @State private var isDraggingHandle = false
+
+    // Active values during gestures (for immediate visual feedback)
+    @State private var activeZoom: CGFloat
+    @State private var activePan: CGFloat
 
     @Environment(\.self) private var environment
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    /// Computed layout geometry based on current view size and zoom/pan state.
-    private var geometry: GradientLayoutGeometry {
+    // MARK: - Initializer
+    public init(viewModel: GradientEditViewModel) {
+        self.viewModel = viewModel
+        self.baseZoom = viewModel.zoomLevel
+        self.basePan = viewModel.panOffset
+        self.activeZoom = viewModel.zoomLevel
+        self.activePan = viewModel.panOffset
+    }
+
+    /// Computes geometry for the current view state.
+    private func geometry(for size: CGSize) -> GradientLayoutGeometry {
         GradientLayoutGeometry(
-            viewSize: viewSize,
-            zoomLevel: viewModel.zoomLevel,
-            panOffset: viewModel.panOffset
+            viewSize: size,
+            zoomLevel: activeZoom,
+            panOffset: activePan
         )
     }
 
-    var body: some View {
+    public var body: some View {
         GeometryReader { proxy in
+            let computedGeometry = geometry(for: proxy.size)
+
             Group {
                 if isCompactWidth {
                     // Compact: show gradient, present editor as sheet
-                    gradientView(geometry: geometry)
+                    gradientView(geometry: computedGeometry)
                         .sheet(isPresented: $showEditorSheet) {
                             editorView
                                 .presentationDetents([.medium, .large])
@@ -37,7 +51,7 @@ struct GradientEditView: View {
                 } else {
                     // Regular: show side-by-side
                     HStack(spacing: 0) {
-                        gradientView(geometry: geometry)
+                        gradientView(geometry: computedGeometry)
 
                         if viewModel.isEditingStop {
                             Divider()
@@ -48,20 +62,36 @@ struct GradientEditView: View {
                 }
             }
             .onAppear {
-                viewModel.environment = environment
-                viewSize = proxy.size
+                currentGeometry = computedGeometry
             }
-            .onChange(of: proxy.size) { _, newSize in
-                viewSize = newSize
+            .onChange(of: proxy.size) { _, _ in
+                currentGeometry = computedGeometry
             }
-            .onChange(of: viewModel.isEditingStop) { _, isEditing in
-                if isCompactWidth {
-                    showEditorSheet = isEditing
-                }
+            .onChange(of: activeZoom) { _, _ in
+                currentGeometry = computedGeometry
             }
+            .onChange(of: activePan) { _, _ in
+                currentGeometry = computedGeometry
+            }
+        }
+        .task {
+            viewModel.environment = environment
         }
         .padding()
         .animation(.easeInOut, value: viewModel.isEditingStop)
+        .onChange(of: viewModel.isEditingStop) { _, isEditing in
+            if isCompactWidth {
+                showEditorSheet = isEditing
+            }
+        }
+        .onChange(of: viewModel.zoomLevel) { _, newZoom in
+            activeZoom = newZoom
+            baseZoom = newZoom
+        }
+        .onChange(of: viewModel.panOffset) { _, newPan in
+            activePan = newPan
+            basePan = newPan
+        }
     }
 
     // MARK: - Computed Properties
@@ -90,11 +120,13 @@ struct GradientEditView: View {
             GradientStripView(
                 viewModel: viewModel,
                 geometry: geometry,
-                onStopDrag: handleStopDrag,
-                onStopTap: handleStopTap
+                onStopDragChanged: handleStopDragChanged,
+                onStopDragEnded: handleStopDragEnded,
+                onStopTap: handleStopTap,
+                isDraggingHandle: $isDraggingHandle,
+                pinchGesture: pinchGesture,
+                panGesture: panGesture
             )
-            .gesture(pinchGesture)
-            .gesture(panGesture(geometry: geometry))
 
             Spacer()
 
@@ -114,11 +146,13 @@ struct GradientEditView: View {
             GradientStripView(
                 viewModel: viewModel,
                 geometry: geometry,
-                onStopDrag: handleStopDrag,
-                onStopTap: handleStopTap
+                onStopDragChanged: handleStopDragChanged,
+                onStopDragEnded: handleStopDragEnded,
+                onStopTap: handleStopTap,
+                isDraggingHandle: $isDraggingHandle,
+                pinchGesture: pinchGesture,
+                panGesture: panGesture
             )
-            .gesture(pinchGesture)
-            .gesture(panGesture(geometry: geometry))
 
             Spacer()
 
@@ -160,9 +194,14 @@ struct GradientEditView: View {
 
     // MARK: - Handle Interactions
 
-    private func handleStopDrag(_ handleVM: DragHandleViewModel, coord: CGFloat) {
-        let newPosition = geometry.gradientPosition(from: coord)
+    private func handleStopDragChanged(_ handleVM: DragHandleViewModel, coord: CGFloat) {
+        guard let geom = currentGeometry else { return }
+        let newPosition = geom.gradientPosition(from: coord)
         viewModel.update(colorStopId: handleVM.id, position: newPosition)
+    }
+
+    private func handleStopDragEnded(_ handleVM: DragHandleViewModel) {
+        // Cleanup if needed
     }
 
     private func handleStopTap(_ handleVM: DragHandleViewModel) {
@@ -176,37 +215,40 @@ struct GradientEditView: View {
             .updating($magnification) { value, state, _ in
                 state = value
             }
-            .onChanged { value in
+            .onChanged { [self] value in
+                let newZoom = baseZoom * value
+                activeZoom = max(1.0, min(4.0, newZoom))
+
+                // Reset pan if zoom is back to 100%
+                if activeZoom == 1.0 {
+                    activePan = 0.0
+                }
+            }
+            .onEnded { [self] value in
                 let newZoom = baseZoom * value
                 viewModel.updateZoom(newZoom)
-            }
-            .onEnded { value in
+                activeZoom = viewModel.zoomLevel
                 baseZoom = viewModel.zoomLevel
             }
     }
 
-    private func panGesture(geometry: GradientLayoutGeometry) -> some Gesture {
+    private var panGesture: some Gesture {
         DragGesture(minimumDistance: 10)
-            .updating($panTranslation) { value, state, _ in
-                state = value.translation
-            }
-            .onChanged { value in
-                guard viewModel.zoomLevel > 1.0 else { return }
+            .onChanged { [self] value in
+                guard !isDraggingHandle else { return }
+                guard activeZoom > 1.0 else { return }
+                guard let geom = currentGeometry else { return }
 
-                let translation: CGFloat
-                if geometry.orientation == .vertical {
-                    translation = value.translation.height
-                } else {
-                    translation = value.translation.width
-                }
-
-                // Convert translation to pan offset change
-                let panChange = -translation / geometry.stripLength
-                let newPan = basePan + panChange
-                viewModel.updatePan(newPan)
+                let translation = geom.orientation == .vertical ? value.translation.height : value.translation.width
+                let panChange = -translation / geom.stripLength
+                activePan = max(0.0, min(1.0, basePan + panChange))
             }
-            .onEnded { _ in
-                basePan = viewModel.panOffset
+            .onEnded { [self] value in
+                guard !isDraggingHandle else { return }
+                guard activeZoom > 1.0 else { return }
+
+                viewModel.updatePan(activePan)
+                basePan = activePan
             }
     }
 

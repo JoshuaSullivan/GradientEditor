@@ -1,9 +1,10 @@
 import SwiftUI
 
 public struct DragHandle: View {
-    
+
     let viewModel: DragHandleViewModel
-    
+    var isHorizontal: Bool = false
+
     public var body: some View {
         ZStack(alignment: .trailing) {
             Group {
@@ -33,7 +34,8 @@ public struct DragHandle: View {
                 
         }
         .frame(width: 80, height: 30)
-        .offset(y: -15)
+        .rotationEffect(isHorizontal ? .degrees(-90) : .degrees(0), anchor: .center)
+        .offset(x: isHorizontal ? -40 : 0, y: isHorizontal ? -55 : -15)
     }
 }
 

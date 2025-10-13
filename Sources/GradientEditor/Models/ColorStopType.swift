@@ -23,6 +23,26 @@ public enum ColorStopType: Codable, Sendable {
             return "dual"
         }
     }
+
+    /// The starting color for this stop (for interpolation).
+    public var startColor: CGColor {
+        switch self {
+        case .single(let color):
+            return color
+        case .dual(let colorA, _):
+            return colorA
+        }
+    }
+
+    /// The ending color for this stop (for interpolation).
+    public var endColor: CGColor {
+        switch self {
+        case .single(let color):
+            return color
+        case .dual(_, let colorB):
+            return colorB
+        }
+    }
     
     public init?(encodingName: String, firstColor: CGColor, secondColor: CGColor?) {
         if encodingName == "single" {

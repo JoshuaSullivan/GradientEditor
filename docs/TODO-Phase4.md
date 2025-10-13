@@ -5,7 +5,11 @@
 
 **Goal:** Create a functional example app for manual testing and demonstration
 
-**Current State:** Xcode project created with all source files and local package dependency configured. Ready for testing.
+**Current State:**
+- Xcode project created with all source files and local package dependency configured
+- Renamed ColorScheme to GradientColorScheme to avoid SwiftUI naming conflict
+- File rename pending (ColorScheme.swift → GradientColorScheme.swift)
+- Ready for testing after file rename
 
 ## 4.1 App Target Setup
 

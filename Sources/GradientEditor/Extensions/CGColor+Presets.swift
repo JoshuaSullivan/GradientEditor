@@ -1,6 +1,6 @@
 import CoreGraphics
 
-extension CGColor {
+public extension CGColor {
     
     static let topoBlue = CGColor.make(redInt: 220, green: 220, blue: 254)
     static let topoGreen = CGColor.make(redInt: 238, green: 249, blue: 217)

@@ -47,14 +47,14 @@ public class GradientEditViewModel {
     
     public var environment: EnvironmentValues = EnvironmentValues()
     
-    public private(set) var scheme: ColorScheme
+    public private(set) var scheme: GradientColorScheme
     
     public private(set) var selectedStop: ColorStop?
     public var editPosition: CGFloat = 0.5
     
     private var subs = Set<AnyCancellable>()
     
-    public init(scheme: ColorScheme, onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil) {
+    public init(scheme: GradientColorScheme, onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil) {
 
         self.scheme = scheme
         self.stops = Set(scheme.colorMap.stops)
