@@ -182,6 +182,8 @@ public struct GradientEditView: View {
                 Image(systemName: "square.and.arrow.up")
                     .font(.title)
             }
+            .accessibilityLabel(AccessibilityLabels.exportButton)
+            .accessibilityIdentifier(AccessibilityIdentifiers.exportButton)
 
             Button {
                 viewModel.addTapped()
@@ -189,6 +191,9 @@ public struct GradientEditView: View {
                 Image(systemName: "plus.circle")
                     .font(.title)
             }
+            .accessibilityLabel(AccessibilityLabels.addStopButton)
+            .accessibilityHint(AccessibilityHints.addStopButton)
+            .accessibilityIdentifier(AccessibilityIdentifiers.addStopButton)
         }
     }
 

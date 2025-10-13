@@ -33,9 +33,28 @@ public struct DragHandle: View {
                 .padding(.trailing, 4)
                 
         }
-        .frame(width: 80, height: 30)
+        .frame(minWidth: 80, minHeight: 30)
+        .fixedSize()
         .rotationEffect(isHorizontal ? .degrees(-90) : .degrees(0), anchor: .center)
         .offset(x: isHorizontal ? -40 : 0, y: isHorizontal ? -55 : -15)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityHint(AccessibilityHints.colorStopHandle)
+        .accessibilityIdentifier(AccessibilityIdentifiers.colorStopHandle(id: viewModel.id))
+        .accessibilityAddTraits(.isButton)
+    }
+
+    // MARK: - Accessibility
+
+    private var accessibilityLabel: String {
+        let typeString: String
+        switch viewModel.colorStopType {
+        case .single:
+            typeString = "Single"
+        case .dual:
+            typeString = "Dual"
+        }
+        return AccessibilityLabels.colorStopHandle(position: viewModel.position, type: typeString)
     }
 }
 

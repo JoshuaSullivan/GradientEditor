@@ -25,6 +25,8 @@ struct GradientStripView<PinchGesture: Gesture, PanGestureType: Gesture>: View {
                 )
                 .simultaneousGesture(pinchGesture)
                 .simultaneousGesture(panGesture)
+                .accessibilityLabel(AccessibilityLabels.gradientPreview)
+                .accessibilityIdentifier(AccessibilityIdentifiers.gradientStrip)
 
             // Selected stop indicator
             if let editPos = selectedStopViewPosition {
