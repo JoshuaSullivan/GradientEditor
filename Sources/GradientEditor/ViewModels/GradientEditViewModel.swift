@@ -119,6 +119,7 @@ public class GradientEditViewModel {
     
     private func deleteSelectedStop() {
         guard let id = selectedStop?.id else { return }
+        guard colorStopViewModel.canDelete else { return }
         selectNextStop()
         dragHandleViewModels.removeAll { $0.id == id }
         stops = stops.filter { $0.id != id }
