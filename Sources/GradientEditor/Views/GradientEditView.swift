@@ -1,5 +1,41 @@
 import SwiftUI
 
+/// The main gradient editing view.
+///
+/// `GradientEditView` provides a complete UI for editing gradients, including:
+/// - Interactive gradient preview with zoom and pan
+/// - Draggable color stop handles
+/// - Color stop editor panel (adaptive to screen size)
+/// - Control buttons for adding stops and exporting
+///
+/// The view automatically adapts its layout based on size class (compact vs. regular width).
+///
+/// ## Topics
+///
+/// ### Creating the View
+/// - ``init(viewModel:)``
+///
+/// ## Example
+/// ```swift
+/// struct MyGradientEditor: View {
+///     @State private var viewModel: GradientEditViewModel
+///
+///     init() {
+///         viewModel = GradientEditViewModel(scheme: .wakeIsland) { result in
+///             switch result {
+///             case .saved(let colorMap):
+///                 print("Saved: \(colorMap)")
+///             case .cancelled:
+///                 print("Cancelled")
+///             }
+///         }
+///     }
+///
+///     var body: some View {
+///         GradientEditView(viewModel: viewModel)
+///     }
+/// }
+/// ```
 public struct GradientEditView: View {
 
     @Bindable public var viewModel: GradientEditViewModel
@@ -19,6 +55,15 @@ public struct GradientEditView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     // MARK: - Initializer
+    /// Creates a gradient edit view.
+    ///
+    /// - Parameter viewModel: The view model managing the gradient editing state.
+    ///
+    /// ## Example
+    /// ```swift
+    /// let viewModel = GradientEditViewModel(scheme: .wakeIsland)
+    /// let editView = GradientEditView(viewModel: viewModel)
+    /// ```
     public init(viewModel: GradientEditViewModel) {
         self.viewModel = viewModel
         self.baseZoom = viewModel.zoomLevel

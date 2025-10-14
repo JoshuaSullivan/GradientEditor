@@ -1,11 +1,49 @@
 import CoreGraphics
 
+/// The color configuration for a gradient stop.
+///
+/// `ColorStopType` defines whether a stop uses a single color or transitions between
+/// two colors at that specific position. This enables both smooth gradients and hard
+/// color transitions within the same gradient.
+///
+/// ## Topics
+///
+/// ### Stop Types
+/// - ``single(_:)``
+/// - ``dual(_:_:)``
+///
+/// ### Properties
+/// - ``title``
+/// - ``startColor``
+/// - ``endColor``
+/// - ``encodingName``
+///
+/// ## Example
+/// ```swift
+/// // Smooth single-color stop
+/// let smoothStop = ColorStopType.single(.blue)
+///
+/// // Hard transition between two colors
+/// let hardTransition = ColorStopType.dual(.red, .yellow)
+/// ```
 nonisolated
 public enum ColorStopType: Codable, Sendable {
-    
+
+    /// A single color at this position.
+    ///
+    /// Creates a smooth transition from the previous stop to this color, and from this color
+    /// to the next stop.
     case single(CGColor)
+
+    /// Two colors at this position, creating a hard transition.
+    ///
+    /// The first color ends the gradient segment from the previous stop, and the second color
+    /// begins the segment to the next stop. This creates a sharp color boundary at this position.
     case dual(CGColor, CGColor)
-    
+
+    /// A localized display title for this stop type.
+    ///
+    /// Returns "Single" for single-color stops and "Dual" for dual-color stops.
     public var title: String {
         switch self {
         case .single:
@@ -14,7 +52,10 @@ public enum ColorStopType: Codable, Sendable {
             return LocalizedString.colorStopTypeDual
         }
     }
-    
+
+    /// The encoding name used for serialization.
+    ///
+    /// Returns "single" or "dual" for use in JSON encoding/decoding.
     public var encodingName: String {
         switch self {
         case .single:
@@ -24,7 +65,9 @@ public enum ColorStopType: Codable, Sendable {
         }
     }
 
-    /// The starting color for this stop (for interpolation).
+    /// The starting color for gradient interpolation.
+    ///
+    /// For single-color stops, returns the single color. For dual-color stops, returns the first color.
     public var startColor: CGColor {
         switch self {
         case .single(let color):
@@ -34,7 +77,9 @@ public enum ColorStopType: Codable, Sendable {
         }
     }
 
-    /// The ending color for this stop (for interpolation).
+    /// The ending color for gradient interpolation.
+    ///
+    /// For single-color stops, returns the single color. For dual-color stops, returns the second color.
     public var endColor: CGColor {
         switch self {
         case .single(let color):

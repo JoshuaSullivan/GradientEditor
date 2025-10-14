@@ -1,6 +1,56 @@
 import SwiftUI
 import Combine
 
+/// The main view model for gradient editing.
+///
+/// `GradientEditViewModel` manages all state and logic for editing gradients, including:
+/// - Color stop management (add, delete, modify, duplicate)
+/// - Zoom and pan state (1x to 4x zoom)
+/// - Selection and editing state
+/// - Completion callbacks for save/cancel
+///
+/// This view model must be created on the main actor and is designed to be used with ``GradientEditView``.
+///
+/// ## Topics
+///
+/// ### Creating a View Model
+/// - ``init(scheme:onComplete:)``
+///
+/// ### State Properties
+/// - ``scheme``
+/// - ``colorStops``
+/// - ``selectedStop``
+/// - ``isEditingStop``
+/// - ``zoomLevel``
+/// - ``panOffset``
+/// - ``gradientFill``
+///
+/// ### Stop Management
+/// - ``addTapped()``
+/// - ``stopTapped(_:)``
+/// - ``update(colorStopId:position:)``
+///
+/// ### Zoom and Pan
+/// - ``updateZoom(_:)``
+/// - ``updatePan(_:)``
+///
+/// ### Completion
+/// - ``saveGradient()``
+/// - ``cancelEditing()``
+///
+/// ## Example
+/// ```swift
+/// let viewModel = GradientEditViewModel(
+///     scheme: .wakeIsland
+/// ) { result in
+///     switch result {
+///     case .saved(let colorMap):
+///         print("Saved gradient with \(colorMap.stops.count) stops")
+///     case .cancelled:
+///         print("Editing cancelled")
+///     }
+/// }
+/// ```
 @Observable
 @MainActor
 public class GradientEditViewModel {
@@ -9,12 +59,19 @@ public class GradientEditViewModel {
     let id: String = UUID().uuidString
 
     /// Completion handler called when editing is complete.
+    ///
+    /// This callback receives a ``GradientEditorResult`` indicating whether the user saved or cancelled.
     public var onComplete: (@Sendable (GradientEditorResult) -> Void)?
 
     /// Current zoom level (1.0 = 100%, 4.0 = 400%).
+    ///
+    /// Use ``updateZoom(_:)`` to modify this value, which clamps to the valid range.
     public var zoomLevel: CGFloat = 1.0
 
     /// Current pan offset (0.0 - 1.0, where 0.5 is centered).
+    ///
+    /// Only applicable when ``zoomLevel`` is greater than 1.0.
+    /// Use ``updatePan(_:)`` to modify this value.
     public var panOffset: CGFloat = 0.0
 
     public var gradientFill: LinearGradient {
@@ -54,6 +111,25 @@ public class GradientEditViewModel {
     
     private var subs = Set<AnyCancellable>()
     
+    /// Creates a new gradient edit view model.
+    ///
+    /// - Parameters:
+    ///   - scheme: The gradient scheme to edit.
+    ///   - onComplete: Optional callback invoked when editing completes with save or cancel.
+    ///
+    /// ## Example
+    /// ```swift
+    /// let viewModel = GradientEditViewModel(scheme: .wakeIsland) { result in
+    ///     switch result {
+    ///     case .saved(let colorMap):
+    ///         // Handle saved gradient
+    ///         break
+    ///     case .cancelled:
+    ///         // Handle cancellation
+    ///         break
+    ///     }
+    /// }
+    /// ```
     public init(scheme: GradientColorScheme, onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil) {
 
         self.scheme = scheme
@@ -65,9 +141,14 @@ public class GradientEditViewModel {
             .sink(receiveValue: handle(action:))
             .store(in: &subs)
     }
-    
+
+    /// Updates the position of a specific color stop.
+    ///
+    /// - Parameters:
+    ///   - colorStopId: The unique identifier of the stop to update.
+    ///   - position: The new position (typically 0.0 to 1.0).
     public func update(colorStopId: String, position: CGFloat) {
-        guard 
+        guard
             let stop = stops.first(where: { $0.id == colorStopId }),
             let vm = dragHandleViewModels.first(where: { $0.id == colorStopId })
         else {
@@ -80,7 +161,10 @@ public class GradientEditViewModel {
         stops.insert(newStop)
         editPosition = position
     }
-    
+
+    /// Handles tapping on a color stop to select it for editing.
+    ///
+    /// - Parameter stopId: The unique identifier of the stop to select.
     public func stopTapped(_ stopId: String) {
         guard let stop = stops.first(where: { $0.id == stopId }) else {
             assertionFailure("Couldn't find selected stop!")
@@ -91,7 +175,8 @@ public class GradientEditViewModel {
         selectedStop = stop
         editPosition = stop.position
     }
-    
+
+    /// Adds a new color stop at position 0.5 with a random color.
     public func addTapped() {
         let colors: [CGColor] = [.red, .orange, .yellow, .green, .blue, .purple]
         let color = colors[Int.random(in: 0..<colors.count)]
@@ -201,16 +286,27 @@ public class GradientEditViewModel {
         activate(stop: duplicateStop)
     }
     
+    /// Saves the edited gradient and calls the completion handler.
+    ///
+    /// Creates a ``ColorMap`` from the current color stops and invokes the completion
+    /// callback with ``GradientEditorResult/saved(_:)``.
     public func saveGradient() {
         let gradient = ColorMap(stops: colorStops)
         onComplete?(.saved(gradient))
     }
 
+    /// Cancels editing without saving and calls the completion handler.
+    ///
+    /// Invokes the completion callback with ``GradientEditorResult/cancelled``.
     public func cancelEditing() {
         onComplete?(.cancelled)
     }
 
     /// Updates the zoom level, clamping to valid range (1.0 - 4.0).
+    ///
+    /// When zoom is reset to 1.0, the pan offset is automatically reset to 0.0.
+    ///
+    /// - Parameter newZoom: The desired zoom level (will be clamped to 1.0-4.0 range).
     public func updateZoom(_ newZoom: CGFloat) {
         zoomLevel = max(1.0, min(4.0, newZoom))
 
@@ -221,6 +317,11 @@ public class GradientEditViewModel {
     }
 
     /// Updates the pan offset, clamping to valid range (0.0 - 1.0).
+    ///
+    /// Pan offset is only applied when ``zoomLevel`` is greater than 1.0.
+    /// A value of 0.0 shows the start of the gradient, 1.0 shows the end.
+    ///
+    /// - Parameter newPan: The desired pan offset (will be clamped to 0.0-1.0 range).
     public func updatePan(_ newPan: CGFloat) {
         guard zoomLevel > 1.0 else {
             panOffset = 0.0
