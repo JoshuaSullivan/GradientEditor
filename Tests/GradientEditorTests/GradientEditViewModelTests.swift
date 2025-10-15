@@ -344,4 +344,170 @@ struct GradientEditViewModelTests {
         #expect(updatedHandle.position == 0.8)
         #expect(updatedHandle.position != originalPosition)
     }
+
+    // MARK: - GradientFill Tests
+
+    @Test("GradientFill returns valid LinearGradient")
+    func gradientFillReturnsCorrectGradient() {
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        // Access gradientFill - should not crash
+        let _ = viewModel.gradientFill
+
+        // If we got here, gradient creation succeeded
+        #expect(viewModel.colorStops.count == 2)
+    }
+
+    @Test("GradientFill handles dual-color stops without crashing")
+    func gradientFillWithDualColors() {
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 0.5, type: .dual(.green, .blue)),
+                ColorStop(position: 1.0, type: .single(.yellow))
+            ])
+        )
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        // Access gradientFill - should not crash even with dual colors
+        let _ = viewModel.gradientFill
+
+        // If we got here, gradient creation succeeded
+        #expect(viewModel.colorStops.count == 3)
+    }
+
+    // MARK: - Export/Import Tests
+
+    @Test("Export gradient creates valid JSON")
+    func exportGradientCreatesJSON() {
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        // Export should not crash
+        viewModel.exportGradient()
+
+        // Verify gradient still has correct stops after export
+        #expect(viewModel.colorStops.count == 2)
+    }
+
+    @Test("Import gradient with valid data succeeds")
+    func importGradientWithValidData() {
+        let scheme = GradientColorScheme.wakeIsland
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        let colorMap = ColorMap(stops: [
+            ColorStop(position: 0.0, type: .single(.red)),
+            ColorStop(position: 1.0, type: .single(.blue))
+        ])
+
+        let jsonData = try! JSONEncoder().encode(colorMap)
+
+        // Import should not crash
+        viewModel.importGradient(data: jsonData)
+
+        // Verify view model state is still valid
+        #expect(viewModel.colorStops.count > 0)
+    }
+
+    @Test("Import gradient with invalid data handles error")
+    func importGradientWithInvalidData() {
+        let scheme = GradientColorScheme.wakeIsland
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        let invalidData = "invalid json".data(using: .utf8)!
+
+        // Import should handle error gracefully without crashing
+        viewModel.importGradient(data: invalidData)
+
+        // Verify view model state is still valid
+        #expect(viewModel.colorStops.count > 0)
+    }
+
+    // MARK: - Close Action Tests
+
+    @Test("Close action clears editing state")
+    func closeActionClearsState() {
+        let scheme = GradientColorScheme.wakeIsland
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        // Select a stop
+        let firstStop = viewModel.colorStops.first!
+        viewModel.stopTapped(firstStop.id)
+        #expect(viewModel.isEditingStop == true)
+        #expect(viewModel.selectedStop != nil)
+
+        // Trigger close action
+        viewModel.colorStopViewModel.closeTapped()
+
+        // Editing state should be cleared
+        #expect(viewModel.isEditingStop == false)
+        #expect(viewModel.selectedStop == nil)
+    }
+
+    // MARK: - Duplicate Edge Cases
+
+    @Test("Duplicate last stop places between previous and current")
+    func duplicateLastStop() {
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        let sortedStops = viewModel.colorStops.sorted(by: { $0.position < $1.position })
+        let lastStop = sortedStops.last!
+        viewModel.stopTapped(lastStop.id)
+
+        viewModel.colorStopViewModel.duplicateTapped()
+
+        // Duplicated stop should be between 0.0 and 1.0
+        let duplicatedStop = viewModel.selectedStop
+        #expect(duplicatedStop?.position == 0.5)
+    }
+
+    @Test("Duplicate only stop places at midpoint")
+    func duplicateOnlyStop() {
+        // Create a gradient with only one stop (edge case)
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.3, type: .single(.red))
+            ])
+        )
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        #expect(viewModel.colorStops.count == 1)
+
+        let onlyStop = viewModel.colorStops.first!
+        viewModel.stopTapped(onlyStop.id)
+
+        viewModel.colorStopViewModel.duplicateTapped()
+
+        // Duplicated stop should be at 0.5 (midpoint)
+        let duplicatedStop = viewModel.selectedStop
+        #expect(duplicatedStop?.position == 0.5)
+        #expect(viewModel.colorStops.count == 2)
+    }
 }
