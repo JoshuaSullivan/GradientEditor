@@ -334,20 +334,17 @@ public class GradientEditViewModel {
         let grad = ColorMap(stops: colorStops)
         do {
             let json = try JSONEncoder().encode(grad)
-            let jsonString = String(data: json, encoding: .utf8)!
-            print(jsonString)
             importGradient(data: json)
         } catch {
-            print("Error encoding gradient: \(error)")
+            // Silently handle encoding errors for now
         }
     }
-    
+
     public func importGradient(data: Data) {
         do {
-            let grad = try JSONDecoder().decode(ColorMap.self, from: data)
-            print(grad)
+            _ = try JSONDecoder().decode(ColorMap.self, from: data)
         } catch {
-            print("Error decoding gradient: \(error)")
+            // Silently handle decoding errors for now
         }
     }
     

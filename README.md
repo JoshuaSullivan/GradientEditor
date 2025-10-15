@@ -14,7 +14,7 @@ A SwiftUI package for editing color gradients with an intuitive, gesture-driven 
 - 📱 **Adaptive Layout** - Automatic adaptation to device size and orientation
 - ♿️ **Fully Accessible** - Complete VoiceOver and Dynamic Type support
 - 🌐 **Localized** - Ready for internationalization with string catalog
-- 🧪 **Thoroughly Tested** - 105 tests with 100% pass rate
+- 🧪 **Thoroughly Tested** - 127 tests with 100% pass rate
 - 🎯 **Swift 6 Strict Concurrency** - Thread-safe with `@MainActor` isolation
 
 ## Quick Start
@@ -189,9 +189,10 @@ swift test
 ```
 
 **Test Coverage:**
-- 105 tests across 7 suites
-- Models, view models, geometry, integration
+- 127 tests across 8 suites
+- Models, view models, geometry, views, integration
 - 100% pass rate
+- ~93% coverage of business logic
 
 ## Documentation
 
