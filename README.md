@@ -65,7 +65,7 @@ The main SwiftUI view for gradient editing. Provides:
 - Interactive gradient preview with draggable color stops
 - Zoom (1x-4x) and pan gestures for precise editing
 - Adaptive layout for compact and regular size classes
-- Built-in controls for adding/exporting gradients
+- Built-in controls for adding and editing color stops
 
 ### GradientEditViewModel
 
@@ -154,17 +154,6 @@ Access all presets: `GradientColorScheme.allPresets`
 ## Localization
 
 All user-facing strings are localized via `Localizable.xcstrings`. The package is ready for additional language translations.
-
-## Export & Import
-
-```swift
-// Export to JSON
-let jsonData = try gradientScheme.toJSON()
-let jsonString = String(data: jsonData, encoding: .utf8)
-
-// Import from JSON
-let importedScheme = try GradientColorScheme.from(json: jsonData)
-```
 
 ## Requirements
 

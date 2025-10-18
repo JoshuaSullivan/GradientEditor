@@ -106,12 +106,12 @@ All notable changes to this project will be documented in this file.
 
 ### API Enhancement: GradientColorScheme Result Type
 
-**Changed save and export result type from ColorMap to GradientColorScheme**
+**Changed save result type from ColorMap to GradientColorScheme**
 
 **Motivation:**
 - Richer data format supporting UI like gradient browsers with names/descriptions
 - Cleaner API for consuming apps - no manual reconstruction of metadata
-- Better alignment with existing `GradientColorScheme` type that already has JSON import/export
+- Better alignment with existing `GradientColorScheme` type
 
 **Changes:**
 - **GradientEditorResult** - Changed `.saved(ColorMap)` → `.saved(GradientColorScheme)`
@@ -121,10 +121,6 @@ All notable changes to this project will be documented in this file.
 - **GradientEditViewModel.saveGradient()** - Returns complete scheme with preserved metadata
   - Maintains original name and description from input scheme
   - Creates new `GradientColorScheme` with updated `ColorMap`
-
-- **Export/Import Methods** - Now handle `GradientColorScheme` instead of `ColorMap`
-  - `exportGradient()` uses `GradientColorScheme.toJSON()`
-  - `importGradient()` uses `GradientColorScheme.from(json:)`
 
 **Migration Guide:**
 ```swift
@@ -163,8 +159,6 @@ case .saved(let scheme):
 **Code Quality Improvements:**
 - ✅ Verified zero compiler warnings with clean build
 - ✅ Removed all debug print statements from production code
-  - Cleaned up exportGradient() and importGradient() placeholder methods
-  - Removed unnecessary string conversions
 - ✅ Searched for TODO/FIXME comments (none found in Sources/)
 - ✅ Verified Package.swift metadata correctness
 - ✅ All 127 tests passing (100% pass rate) after cleanup
@@ -229,7 +223,6 @@ case .saved(let scheme):
   - ✅ Stop editing features (add, delete, duplicate, modify)
   - ✅ Position validation and clamping
   - ✅ Adaptive layout logic (size class calculations)
-  - ✅ Export/import JSON functionality
   - ✅ Complete editing workflows
 - Example app builds successfully for iOS Simulator
 - Follows SPM best practice (separate Xcode project doesn't compile when used as dependency)
@@ -257,7 +250,6 @@ case .saved(let scheme):
 - Coverage improved from **~64% to 94.09%** lines
 - Added 8 new tests covering:
   - gradientFill property (single & dual-color stops)
-  - Export/import functionality (valid and invalid JSON data)
   - Close action state clearing
   - Duplicate edge cases (last stop, only stop scenarios)
 
@@ -340,7 +332,6 @@ case .saved(let scheme):
 - Gesture reference guide
 - Adaptive layout explanation
 - Accessibility features overview
-- Export/import examples
 - Testing information
 - Architecture overview
 - Contributing guidelines
@@ -461,7 +452,7 @@ case .saved(let scheme):
 
 **VoiceOver Support:**
 - Added accessibility labels to all interactive elements
-  - Control buttons (export, add stop)
+  - Control buttons (add stop)
   - Drag handles with dynamic labels showing position and type
   - Editor navigation buttons (prev, next, close)
   - Editor controls (delete, duplicate)

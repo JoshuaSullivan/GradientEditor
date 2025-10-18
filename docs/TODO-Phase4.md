@@ -43,8 +43,6 @@
 ## 4.4 Example App Features ✅
 
 - [x] Add ability to save custom gradients (implemented)
-- [ ] Add ability to share gradients (export JSON) - future enhancement (deferred to post-1.0)
-- [ ] Add ability to import gradients from JSON - future enhancement (deferred to post-1.0)
 - [ ] Add basic settings or about screen - optional (deferred to post-1.0)
 
 ## 4.5 Testing & Validation ✅
@@ -56,7 +54,6 @@
   - [x] Position validation (verified via tests)
   - [x] Adaptive layout (compact vs regular width) (verified via tests)
   - [x] Color picker integration (verified via tests)
-  - [x] Export/import functionality (verified via tests)
 - [x] Build verification on simulator
 - [x] Verify example app structure follows SPM best practices (separate Xcode project in Examples/)
 

@@ -230,8 +230,6 @@ All core development phases (1-7) complete! Final phase for release readiness.
 
 ### 4.4 Example App Features
 - [x] Add ability to save custom gradients
-- [ ] Add ability to share gradients (export JSON) - deferred to post-1.0
-- [ ] Add ability to import gradients from JSON - deferred to post-1.0
 - [ ] Add basic settings or about screen - deferred to post-1.0
 
 **Deliverables:** ✅
@@ -501,7 +499,6 @@ This timeline assumes focused work on this project. Actual time may vary based o
 - Gradient presets beyond current set
 - Animation/interpolation mode options
 - Radial/angular gradient support
-- Export to image formats
 - Gradient noise/dithering options
 - Color space selection
 - macOS/visionOS specific features

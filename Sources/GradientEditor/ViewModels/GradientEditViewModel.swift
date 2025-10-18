@@ -351,28 +351,4 @@ public class GradientEditViewModel {
         )
     }
 
-    public func exportGradient() {
-        let updatedColorMap = ColorMap(id: scheme.colorMap.id, stops: colorStops)
-        let updatedScheme = GradientColorScheme(
-            id: scheme.id,
-            name: scheme.name,
-            description: scheme.description,
-            colorMap: updatedColorMap
-        )
-        do {
-            let json = try updatedScheme.toJSON()
-            importGradient(data: json)
-        } catch {
-            // Silently handle encoding errors for now
-        }
-    }
-
-    public func importGradient(data: Data) {
-        do {
-            _ = try GradientColorScheme.from(json: data)
-        } catch {
-            // Silently handle decoding errors for now
-        }
-    }
-    
 }
