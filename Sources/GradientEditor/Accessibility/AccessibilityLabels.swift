@@ -5,6 +5,7 @@ import Foundation
 public enum AccessibilityLabels {
     // MARK: - Gradient Edit View
     public static let gradientPreview = String(localized: "a11y_gradient_preview", bundle: .module, comment: "Accessibility label for the gradient preview area")
+    public static let settingsButton = String(localized: "a11y_settings_button", bundle: .module, comment: "Accessibility label for gradient settings button")
     public static let addStopButton = String(localized: "a11y_add_stop_button", bundle: .module, comment: "Accessibility label for add color stop button")
     public static let saveButton = String(localized: "a11y_save_button", bundle: .module, comment: "Accessibility label for save gradient button")
     public static let cancelButton = String(localized: "a11y_cancel_button", bundle: .module, comment: "Accessibility label for cancel editing button")
@@ -26,6 +27,7 @@ public enum AccessibilityLabels {
 /// Accessibility hint constants providing additional context for VoiceOver users.
 public enum AccessibilityHints {
     // MARK: - Gradient Edit View
+    public static let settingsButton = String(localized: "a11y_hint_settings", bundle: .module, comment: "Hint: Double tap to edit gradient name and description")
     public static let addStopButton = String(localized: "a11y_hint_add_stop", bundle: .module, comment: "Hint: Double tap to add a new color stop to the gradient")
     public static let saveButton = String(localized: "a11y_hint_save", bundle: .module, comment: "Hint: Double tap to save the gradient and close the editor")
     public static let cancelButton = String(localized: "a11y_hint_cancel", bundle: .module, comment: "Hint: Double tap to cancel editing and discard changes")

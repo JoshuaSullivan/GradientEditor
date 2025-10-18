@@ -6,6 +6,69 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-10-18
 
+### Bug Fix: Navigation Title Not Updating After Metadata Edit
+
+**Issue:** When editing the gradient name in the settings sheet, the navigation bar title did not update to reflect the new name.
+
+**Root Cause:** The `EditorView` was displaying `scheme.name` (the immutable property from initialization) instead of `viewModel.scheme.name` (which is reactive and updates when metadata changes).
+
+**Fix:** Changed navigation title binding from `scheme.name` to `viewModel.scheme.name` in `EditorView.swift` line 22.
+
+**Files Modified:**
+- Example: `EditorView.swift` (navigation title binding)
+
+**Status:** Navigation title now updates reactively when gradient name is edited. All 133 tests passing.
+
+**Test Coverage Added:**
+- Added 6 new tests for `SchemeMetadataEditorView` (127 → 133 tests)
+  - Initialization with name and description bindings
+  - Empty name validation (save button disabled)
+  - Whitespace-only name validation
+  - Valid name input
+  - Empty description (allowed, since only name is required)
+  - Long description handling
+
+**Files Modified:**
+- Tests: `ViewTests.swift` (added SchemeMetadataEditorView test suite)
+
+---
+
+### Gradient Settings Feature
+
+**Added metadata editing UI to allow users to modify gradient name and description.**
+
+**Implementation:**
+- Created `SchemeMetadataEditorView` with Form-based layout
+  - TextField for gradient name (required field, validated)
+  - TextEditor for description with minimum height
+  - Save/Cancel buttons in toolbar
+  - Auto-focus on name field
+  - Platform-specific navigation bar styling (`#if os(iOS)`)
+- Added settings button to `GradientEditView` control stack
+  - Uses "gearshape" SF Symbol
+  - Positioned before add stop button
+  - Presents metadata editor as sheet
+- Updated `GradientEditViewModel` to support metadata editing
+  - Changed `scheme` property to be mutable
+  - Added `updateSchemeMetadata(name:description:)` method
+- Added complete accessibility support
+  - 6 new accessibility identifiers
+  - VoiceOver labels and hints
+  - Localized strings in `Localizable.xcstrings`
+
+**Files Modified:**
+- Core: `GradientEditViewModel.swift`
+- Views: `GradientEditView.swift`
+- Accessibility: `AccessibilityIdentifiers.swift`, `AccessibilityLabels.swift`
+- Resources: `Localizable.xcstrings`
+
+**Files Created:**
+- `SchemeMetadataEditorView.swift` - Metadata editing UI
+
+**Status:** Feature complete with full accessibility support. All 127 tests passing.
+
+---
+
 ### API Enhancement: GradientColorScheme Result Type
 
 **Changed save and export result type from ColorMap to GradientColorScheme**

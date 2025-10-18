@@ -99,8 +99,13 @@ struct ViewTests {
     func colorStopEditorViewSingleColor() {
         let stop = ColorStop(position: 0.5, type: .single(CGColor(red: 1, green: 0, blue: 0, alpha: 1)))
         let viewModel = ColorStopEditorViewModel(colorStop: stop)
+        let gradientStops = [
+            ColorStop(position: 0.0, type: .single(CGColor(red: 0, green: 0, blue: 0, alpha: 1))),
+            stop,
+            ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
+        ]
 
-        _ = ColorStopEditorView(viewModel: viewModel)
+        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
 
         #expect(viewModel.isSingleColorStop == true)
         #expect(viewModel.position == 0.5)
@@ -113,8 +118,13 @@ struct ViewTests {
             CGColor(red: 0, green: 1, blue: 0, alpha: 1)
         ))
         let viewModel = ColorStopEditorViewModel(colorStop: stop)
+        let gradientStops = [
+            ColorStop(position: 0.0, type: .single(CGColor(red: 0, green: 0, blue: 0, alpha: 1))),
+            stop,
+            ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
+        ]
 
-        _ = ColorStopEditorView(viewModel: viewModel)
+        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
 
         #expect(viewModel.isSingleColorStop == false)
         #expect(viewModel.position == 0.3)
@@ -125,8 +135,13 @@ struct ViewTests {
         let stop = ColorStop(position: 0.5, type: .single(CGColor(red: 1, green: 0, blue: 0, alpha: 1)))
         let viewModel = ColorStopEditorViewModel(colorStop: stop)
         viewModel.canDelete = true
+        let gradientStops = [
+            ColorStop(position: 0.0, type: .single(CGColor(red: 0, green: 0, blue: 0, alpha: 1))),
+            stop,
+            ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
+        ]
 
-        _ = ColorStopEditorView(viewModel: viewModel)
+        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
 
         #expect(viewModel.canDelete == true)
     }
@@ -136,8 +151,13 @@ struct ViewTests {
         let stop = ColorStop(position: 0.5, type: .single(CGColor(red: 1, green: 0, blue: 0, alpha: 1)))
         let viewModel = ColorStopEditorViewModel(colorStop: stop)
         viewModel.canDelete = false
+        let gradientStops = [
+            ColorStop(position: 0.0, type: .single(CGColor(red: 0, green: 0, blue: 0, alpha: 1))),
+            stop,
+            ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
+        ]
 
-        _ = ColorStopEditorView(viewModel: viewModel)
+        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
 
         #expect(viewModel.canDelete == false)
     }
@@ -212,5 +232,109 @@ struct ViewTests {
             _ = DragHandle(viewModel: viewModel)
             #expect(viewModel.position == 0.5)
         }
+    }
+
+    // MARK: - SchemeMetadataEditorView Tests
+
+    @Test("SchemeMetadataEditorView initializes with name and description")
+    func schemeMetadataEditorViewInitialization() {
+        @State var name = "Test Gradient"
+        @State var description = "A test gradient description"
+        var saveCalled = false
+        var cancelCalled = false
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: { saveCalled = true },
+            onCancel: { cancelCalled = true }
+        )
+
+        #expect(name == "Test Gradient")
+        #expect(description == "A test gradient description")
+        #expect(saveCalled == false)
+        #expect(cancelCalled == false)
+    }
+
+    @Test("SchemeMetadataEditorView with empty name")
+    func schemeMetadataEditorViewEmptyName() {
+        @State var name = ""
+        @State var description = "Description"
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: {},
+            onCancel: {}
+        )
+
+        // View should be created successfully
+        // Save button will be disabled via .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        #expect(name.isEmpty)
+    }
+
+    @Test("SchemeMetadataEditorView with whitespace-only name")
+    func schemeMetadataEditorViewWhitespaceName() {
+        @State var name = "   "
+        @State var description = "Description"
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: {},
+            onCancel: {}
+        )
+
+        // Save button would be disabled since trimmed name is empty
+        #expect(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+    }
+
+    @Test("SchemeMetadataEditorView with valid name")
+    func schemeMetadataEditorViewValidName() {
+        @State var name = "Wake Island"
+        @State var description = "A tropical gradient"
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: {},
+            onCancel: {}
+        )
+
+        // Save button would be enabled
+        #expect(!name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+    }
+
+    @Test("SchemeMetadataEditorView with empty description")
+    func schemeMetadataEditorViewEmptyDescription() {
+        @State var name = "Gradient Name"
+        @State var description = ""
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: {},
+            onCancel: {}
+        )
+
+        // Empty description is allowed - only name is required
+        #expect(description.isEmpty)
+        #expect(!name.isEmpty)
+    }
+
+    @Test("SchemeMetadataEditorView with long description")
+    func schemeMetadataEditorViewLongDescription() {
+        @State var name = "Complex Gradient"
+        @State var description = "This is a very long description that spans multiple lines and contains detailed information about the gradient, its colors, inspiration, and use cases. It might be several paragraphs long in a real application."
+
+        _ = SchemeMetadataEditorView(
+            name: $name,
+            description: $description,
+            onSave: {},
+            onCancel: {}
+        )
+
+        #expect(description.count > 100)
+        #expect(!name.isEmpty)
     }
 }

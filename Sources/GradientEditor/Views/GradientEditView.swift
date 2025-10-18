@@ -44,12 +44,17 @@ public struct GradientEditView: View {
     @State private var baseZoom: CGFloat
     @State private var basePan: CGFloat
     @State private var showEditorSheet = false
+    @State private var showMetadataEditor = false
     @State private var currentGeometry: GradientLayoutGeometry?
     @State private var isDraggingHandle = false
 
     // Active values during gestures (for immediate visual feedback)
     @State private var activeZoom: CGFloat
     @State private var activePan: CGFloat
+
+    // Temporary state for metadata editing
+    @State private var editingName: String = ""
+    @State private var editingDescription: String = ""
 
     @Environment(\.self) private var environment
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -136,6 +141,19 @@ public struct GradientEditView: View {
         .onChange(of: viewModel.panOffset) { _, newPan in
             activePan = newPan
             basePan = newPan
+        }
+        .sheet(isPresented: $showMetadataEditor) {
+            SchemeMetadataEditorView(
+                name: $editingName,
+                description: $editingDescription,
+                onSave: {
+                    viewModel.updateSchemeMetadata(name: editingName, description: editingDescription)
+                    showMetadataEditor = false
+                },
+                onCancel: {
+                    showMetadataEditor = false
+                }
+            )
         }
     }
 
@@ -230,19 +248,34 @@ public struct GradientEditView: View {
         Group {
             if orientation == .horizontal {
                 HStack(spacing: 20) {
+                    settingsButton
                     addStopButton
                 }
             } else {
                 VStack(spacing: 20) {
+                    settingsButton
                     addStopButton
                 }
             }
         }
     }
 
+    private var settingsButton: some View {
+        Button {
+            // Initialize editing state with current values
+            editingName = viewModel.scheme.name
+            editingDescription = viewModel.scheme.description
+            showMetadataEditor = true
+        } label: {
+            Image(systemName: "gearshape")
+                .font(.title)
+        }
+        .accessibilityLabel(AccessibilityLabels.settingsButton)
+        .accessibilityHint(AccessibilityHints.settingsButton)
+        .accessibilityIdentifier(AccessibilityIdentifiers.settingsButton)
+    }
+
     private var addStopButton: some View {
-        // TODO: Re-enable Share button when sharing is implemented (Phase 9: Sharing Support)
-        // Sharing will require file type associations and export file handling
         Button {
             viewModel.addTapped()
         } label: {

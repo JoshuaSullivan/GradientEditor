@@ -19,7 +19,7 @@ struct EditorView: View {
     var body: some View {
         NavigationStack {
             GradientEditView(viewModel: viewModel)
-                .navigationTitle(scheme.name)
+                .navigationTitle(viewModel.scheme.name)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {

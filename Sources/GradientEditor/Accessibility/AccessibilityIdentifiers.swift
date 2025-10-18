@@ -5,6 +5,7 @@ public enum AccessibilityIdentifiers {
     // MARK: - Gradient Edit View
     public static let gradientPreview = "gradient_preview"
     public static let gradientStrip = "gradient_strip"
+    public static let settingsButton = "settings_button"
     public static let addStopButton = "add_stop_button"
     public static let saveButton = "save_button"
     public static let cancelButton = "cancel_button"
@@ -27,4 +28,10 @@ public enum AccessibilityIdentifiers {
     public static let stopEditorColorPicker = "stop_editor_color_picker"
     public static let stopEditorFirstColorPicker = "stop_editor_first_color_picker"
     public static let stopEditorSecondColorPicker = "stop_editor_second_color_picker"
+
+    // MARK: - Scheme Metadata Editor
+    public static let schemeMetadataName = "scheme_metadata_name"
+    public static let schemeMetadataDescription = "scheme_metadata_description"
+    public static let schemeMetadataSave = "scheme_metadata_save"
+    public static let schemeMetadataCancel = "scheme_metadata_cancel"
 }

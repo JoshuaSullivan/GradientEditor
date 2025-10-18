@@ -103,9 +103,9 @@ public class GradientEditViewModel {
     public var isEditingStop: Bool = false
     
     public var environment: EnvironmentValues = EnvironmentValues()
-    
-    public private(set) var scheme: GradientColorScheme
-    
+
+    public var scheme: GradientColorScheme
+
     public private(set) var selectedStop: ColorStop?
     public var editPosition: CGFloat = 0.5
     
@@ -335,6 +335,20 @@ public class GradientEditViewModel {
             return
         }
         panOffset = max(0.0, min(1.0, newPan))
+    }
+
+    /// Updates the scheme metadata (name and description).
+    ///
+    /// - Parameters:
+    ///   - name: The new name for the gradient scheme.
+    ///   - description: The new description for the gradient scheme.
+    public func updateSchemeMetadata(name: String, description: String) {
+        scheme = GradientColorScheme(
+            id: scheme.id,
+            name: name,
+            description: description,
+            colorMap: scheme.colorMap
+        )
     }
 
     public func exportGradient() {

@@ -189,6 +189,18 @@
         }
       }
     },
+    "a11y_settings_button" : {
+      "comment" : "Accessibility label for gradient settings button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gradient settings"
+          }
+        }
+      }
+    },
     "a11y_add_stop_button" : {
       "comment" : "Accessibility label for add color stop button",
       "extractionState" : "manual",
@@ -293,6 +305,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplicate stop"
+          }
+        }
+      }
+    },
+    "a11y_hint_settings" : {
+      "comment" : "Hint: Double tap to edit gradient name and description",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to edit name and description"
           }
         }
       }

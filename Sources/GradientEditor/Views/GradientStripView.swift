@@ -15,7 +15,7 @@ struct GradientStripView<PinchGesture: Gesture, PanGestureType: Gesture>: View {
     let panGesture: PanGestureType
 
     var body: some View {
-        ZStack(alignment: geometry.orientation == .vertical ? .topTrailing : .topLeading) {
+        ZStack(alignment: .topLeading) {
             // Gradient rectangle
             Rectangle()
                 .fill(gradientFill)
