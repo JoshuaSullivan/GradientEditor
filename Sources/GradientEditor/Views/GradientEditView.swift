@@ -23,8 +23,8 @@ import SwiftUI
 ///     init() {
 ///         viewModel = GradientEditViewModel(scheme: .wakeIsland) { result in
 ///             switch result {
-///             case .saved(let colorMap):
-///                 print("Saved: \(colorMap)")
+///             case .saved(let scheme):
+///                 print("Saved: \(scheme.name)")
 ///             case .cancelled:
 ///                 print("Cancelled")
 ///             }
@@ -177,7 +177,7 @@ public struct GradientEditView: View {
 
             // Controls (only show if not editing or if regular width)
             if !viewModel.isEditingStop || !isCompactWidth {
-                controlButtons
+                controlButtons(orientation: geometry.orientation)
             }
         }
     }
@@ -185,6 +185,15 @@ public struct GradientEditView: View {
     @ViewBuilder
     private func horizontalGradientLayout(geometry: GradientLayoutGeometry) -> some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Controls at top in landscape (only show if not editing or if regular width)
+            if !viewModel.isEditingStop || !isCompactWidth {
+                HStack {
+                    Spacer()
+                    controlButtons(orientation: geometry.orientation)
+                    Spacer()
+                }
+            }
+
             Spacer()
 
             // Gradient strip with stops
@@ -200,46 +209,49 @@ public struct GradientEditView: View {
             )
 
             Spacer()
-
-            // Controls (only show if not editing or if regular width)
-            if !viewModel.isEditingStop || !isCompactWidth {
-                HStack {
-                    controlButtons
-                    Spacer()
-                }
-            }
         }
     }
 
     // MARK: - Editor View
 
     private var editorView: some View {
-        ColorStopEditorView(viewModel: viewModel.colorStopViewModel)
+        ColorStopEditorView(
+            viewModel: viewModel.colorStopViewModel,
+            gradientStops: viewModel.colorStops
+        )
     }
 
     // MARK: - Control Buttons
 
-    private var controlButtons: some View {
-        VStack(spacing: 20) {
-            Button {
-                viewModel.exportGradient()
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.title)
+    @ViewBuilder
+    private func controlButtons(orientation: GradientLayoutGeometry.Orientation) -> some View {
+        // In horizontal (landscape) mode, buttons are arranged horizontally
+        // In vertical (portrait) mode, buttons are arranged vertically
+        Group {
+            if orientation == .horizontal {
+                HStack(spacing: 20) {
+                    addStopButton
+                }
+            } else {
+                VStack(spacing: 20) {
+                    addStopButton
+                }
             }
-            .accessibilityLabel(AccessibilityLabels.exportButton)
-            .accessibilityIdentifier(AccessibilityIdentifiers.exportButton)
-
-            Button {
-                viewModel.addTapped()
-            } label: {
-                Image(systemName: "plus.circle")
-                    .font(.title)
-            }
-            .accessibilityLabel(AccessibilityLabels.addStopButton)
-            .accessibilityHint(AccessibilityHints.addStopButton)
-            .accessibilityIdentifier(AccessibilityIdentifiers.addStopButton)
         }
+    }
+
+    private var addStopButton: some View {
+        // TODO: Re-enable Share button when sharing is implemented (Phase 9: Sharing Support)
+        // Sharing will require file type associations and export file handling
+        Button {
+            viewModel.addTapped()
+        } label: {
+            Image(systemName: "plus.circle")
+                .font(.title)
+        }
+        .accessibilityLabel(AccessibilityLabels.addStopButton)
+        .accessibilityHint(AccessibilityHints.addStopButton)
+        .accessibilityIdentifier(AccessibilityIdentifiers.addStopButton)
     }
 
     // MARK: - Handle Interactions

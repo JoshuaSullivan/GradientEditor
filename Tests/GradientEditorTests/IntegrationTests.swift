@@ -56,8 +56,10 @@ struct IntegrationTests {
         // Save
         viewModel.saveGradient()
         #expect(capture.result != nil)
-        if case .saved(let colorMap) = capture.result {
-            #expect(colorMap.stops.count == initialStopCount + 1)
+        if case .saved(let savedScheme) = capture.result {
+            #expect(savedScheme.colorMap.stops.count == initialStopCount + 1)
+            #expect(savedScheme.name == scheme.name)
+            #expect(savedScheme.description == scheme.description)
         } else {
             Issue.record("Expected saved result")
         }
@@ -456,14 +458,16 @@ struct IntegrationTests {
         viewModel.saveGradient()
 
         #expect(capture.result != nil)
-        if case .saved(let colorMap) = capture.result {
-            #expect(colorMap.stops.count == 3)
+        if case .saved(let savedScheme) = capture.result {
+            #expect(savedScheme.colorMap.stops.count == 3)
+            #expect(savedScheme.name == scheme.name)
+            #expect(savedScheme.description == scheme.description)
 
             // Find and verify the edited stops
-            let savedFirstStop = colorMap.stops.first { $0.id == firstStop.id }
+            let savedFirstStop = savedScheme.colorMap.stops.first { $0.id == firstStop.id }
             #expect(savedFirstStop?.position == 0.15)
 
-            let savedSecondStop = colorMap.stops.first { $0.id == secondStop.id }
+            let savedSecondStop = savedScheme.colorMap.stops.first { $0.id == secondStop.id }
             if case .dual = savedSecondStop?.type {
                 // Success
             } else {

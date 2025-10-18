@@ -14,9 +14,9 @@ import Foundation
 /// ```swift
 /// let viewModel = GradientEditViewModel(scheme: scheme) { result in
 ///     switch result {
-///     case .saved(let colorMap):
-///         // Save the edited gradient
-///         saveGradient(colorMap)
+///     case .saved(let scheme):
+///         // Save the edited gradient scheme
+///         saveGradient(scheme)
 ///     case .cancelled:
 ///         // User cancelled, no action needed
 ///         break
@@ -27,8 +27,8 @@ public enum GradientEditorResult: Sendable {
 
     /// The user completed editing and saved the gradient.
     ///
-    /// Contains the final ``ColorMap`` with all edits applied.
-    case saved(ColorMap)
+    /// Contains the final ``GradientColorScheme`` with all edits applied.
+    case saved(GradientColorScheme)
 
     /// The user cancelled editing without saving.
     ///

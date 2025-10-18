@@ -259,8 +259,11 @@ struct GradientEditViewModelTests {
         viewModel.saveGradient()
 
         #expect(capture.result != nil)
-        if case .saved(let colorMap) = capture.result {
-            #expect(colorMap.stops.count == viewModel.colorStops.count)
+        if case .saved(let savedScheme) = capture.result {
+            #expect(savedScheme.colorMap.stops.count == viewModel.colorStops.count)
+            #expect(savedScheme.name == scheme.name)
+            #expect(savedScheme.description == scheme.description)
+            #expect(savedScheme.id == scheme.id)
         } else {
             Issue.record("Expected saved result")
         }
@@ -412,12 +415,16 @@ struct GradientEditViewModelTests {
         let scheme = GradientColorScheme.wakeIsland
         let viewModel = GradientEditViewModel(scheme: scheme)
 
-        let colorMap = ColorMap(stops: [
-            ColorStop(position: 0.0, type: .single(.red)),
-            ColorStop(position: 1.0, type: .single(.blue))
-        ])
+        let testScheme = GradientColorScheme(
+            name: "Imported",
+            description: "Test import",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
 
-        let jsonData = try! JSONEncoder().encode(colorMap)
+        let jsonData = try! testScheme.toJSON()
 
         // Import should not crash
         viewModel.importGradient(data: jsonData)

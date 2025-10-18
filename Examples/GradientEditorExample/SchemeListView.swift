@@ -66,21 +66,13 @@ struct SchemeListView: View {
         selectedScheme = newScheme
     }
 
-    private func handleEditorResult(_ result: GradientEditorResult, for scheme: GradientColorScheme) {
+    private func handleEditorResult(_ result: GradientEditorResult, for originalScheme: GradientColorScheme) {
         selectedScheme = nil
 
         switch result {
-        case .saved(let colorMap):
-            // Create a new scheme with the edited color map
-            let updatedScheme = GradientColorScheme(
-                id: scheme.id,
-                name: scheme.name,
-                description: scheme.description,
-                colorMap: colorMap
-            )
-
+        case .saved(let updatedScheme):
             // If it's a custom scheme, update it
-            if let index = customSchemes.firstIndex(where: { $0.id == scheme.id }) {
+            if let index = customSchemes.firstIndex(where: { $0.id == updatedScheme.id }) {
                 customSchemes[index] = updatedScheme
             } else {
                 // It's a preset being edited, add it as a custom scheme

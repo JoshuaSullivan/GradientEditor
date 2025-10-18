@@ -4,6 +4,58 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2025-10-18
+
+### API Enhancement: GradientColorScheme Result Type
+
+**Changed save and export result type from ColorMap to GradientColorScheme**
+
+**Motivation:**
+- Richer data format supporting UI like gradient browsers with names/descriptions
+- Cleaner API for consuming apps - no manual reconstruction of metadata
+- Better alignment with existing `GradientColorScheme` type that already has JSON import/export
+
+**Changes:**
+- **GradientEditorResult** - Changed `.saved(ColorMap)` → `.saved(GradientColorScheme)`
+  - Result now includes name, description, and metadata along with gradient stops
+  - Preserves all scheme information through edit → save → reload cycle
+
+- **GradientEditViewModel.saveGradient()** - Returns complete scheme with preserved metadata
+  - Maintains original name and description from input scheme
+  - Creates new `GradientColorScheme` with updated `ColorMap`
+
+- **Export/Import Methods** - Now handle `GradientColorScheme` instead of `ColorMap`
+  - `exportGradient()` uses `GradientColorScheme.toJSON()`
+  - `importGradient()` uses `GradientColorScheme.from(json:)`
+
+**Migration Guide:**
+```swift
+// Before:
+case .saved(let colorMap):
+    let scheme = GradientColorScheme(
+        id: originalScheme.id,
+        name: originalScheme.name,
+        description: originalScheme.description,
+        colorMap: colorMap
+    )
+
+// After:
+case .saved(let scheme):
+    // scheme already has name, description, and updated colorMap
+    saveToStorage(scheme)
+```
+
+**Files Modified:**
+- Core: `GradientEditorResult.swift`, `GradientEditViewModel.swift`
+- Views: `GradientEditView.swift` (DocC comments)
+- Example: `SchemeListView.swift` (simplified result handling), `EditorView.swift`
+- Tests: `GradientEditViewModelTests.swift`, `IntegrationTests.swift`
+- Docs: `README.md`
+
+**Status:** All 127 tests passing. Example app updated and simplified.
+
+---
+
 ## 2025-10-15
 
 ### Phase 8: Polish & Release Preparation - IN PROGRESS 🔨

@@ -42,9 +42,9 @@ struct ContentView: View {
         // Create view model with a preset gradient
         viewModel = GradientEditViewModel(scheme: .wakeIsland) { result in
             switch result {
-            case .saved(let colorMap):
-                print("Gradient saved with \(colorMap.stops.count) stops")
-                // Save the gradient to your app's storage
+            case .saved(let scheme):
+                print("Gradient '\(scheme.name)' saved with \(scheme.colorMap.stops.count) stops")
+                // Save the gradient scheme to your app's storage
             case .cancelled:
                 print("Editing cancelled")
             }

@@ -44,8 +44,8 @@ import Combine
 ///     scheme: .wakeIsland
 /// ) { result in
 ///     switch result {
-///     case .saved(let colorMap):
-///         print("Saved gradient with \(colorMap.stops.count) stops")
+///     case .saved(let scheme):
+///         print("Saved gradient '\(scheme.name)' with \(scheme.colorMap.stops.count) stops")
 ///     case .cancelled:
 ///         print("Editing cancelled")
 ///     }
@@ -121,9 +121,9 @@ public class GradientEditViewModel {
     /// ```swift
     /// let viewModel = GradientEditViewModel(scheme: .wakeIsland) { result in
     ///     switch result {
-    ///     case .saved(let colorMap):
-    ///         // Handle saved gradient
-    ///         break
+    ///     case .saved(let scheme):
+    ///         // Handle saved gradient scheme
+    ///         saveGradient(scheme)
     ///     case .cancelled:
     ///         // Handle cancellation
     ///         break
@@ -288,11 +288,18 @@ public class GradientEditViewModel {
     
     /// Saves the edited gradient and calls the completion handler.
     ///
-    /// Creates a ``ColorMap`` from the current color stops and invokes the completion
-    /// callback with ``GradientEditorResult/saved(_:)``.
+    /// Creates a ``GradientColorScheme`` from the current color stops and invokes the completion
+    /// callback with ``GradientEditorResult/saved(_:)``. The scheme preserves the original name
+    /// and description from the input scheme.
     public func saveGradient() {
-        let gradient = ColorMap(stops: colorStops)
-        onComplete?(.saved(gradient))
+        let updatedColorMap = ColorMap(id: scheme.colorMap.id, stops: colorStops)
+        let updatedScheme = GradientColorScheme(
+            id: scheme.id,
+            name: scheme.name,
+            description: scheme.description,
+            colorMap: updatedColorMap
+        )
+        onComplete?(.saved(updatedScheme))
     }
 
     /// Cancels editing without saving and calls the completion handler.
@@ -331,9 +338,15 @@ public class GradientEditViewModel {
     }
 
     public func exportGradient() {
-        let grad = ColorMap(stops: colorStops)
+        let updatedColorMap = ColorMap(id: scheme.colorMap.id, stops: colorStops)
+        let updatedScheme = GradientColorScheme(
+            id: scheme.id,
+            name: scheme.name,
+            description: scheme.description,
+            colorMap: updatedColorMap
+        )
         do {
-            let json = try JSONEncoder().encode(grad)
+            let json = try updatedScheme.toJSON()
             importGradient(data: json)
         } catch {
             // Silently handle encoding errors for now
@@ -342,7 +355,7 @@ public class GradientEditViewModel {
 
     public func importGradient(data: Data) {
         do {
-            _ = try JSONDecoder().decode(ColorMap.self, from: data)
+            _ = try GradientColorScheme.from(json: data)
         } catch {
             // Silently handle decoding errors for now
         }
