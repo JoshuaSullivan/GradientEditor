@@ -14,7 +14,7 @@ A SwiftUI package for editing color gradients with an intuitive, gesture-driven 
 - 📱 **Adaptive Layout** - Automatic adaptation to device size and orientation
 - ♿️ **Fully Accessible** - Complete VoiceOver and Dynamic Type support
 - 🌐 **Localized** - Ready for internationalization with string catalog
-- 🧪 **Thoroughly Tested** - 133 tests with 100% pass rate
+- 🧪 **Thoroughly Tested** - 144 tests with 100% pass rate
 - 🎯 **Swift 6 Strict Concurrency** - Thread-safe with `@MainActor` isolation
 
 ## Quick Start
@@ -53,6 +53,101 @@ struct ContentView: View {
 
     var body: some View {
         GradientEditView(viewModel: viewModel)
+    }
+}
+```
+
+### UIKit Usage (iOS/visionOS)
+
+For UIKit-based apps, use `GradientEditorViewController`:
+
+```swift
+import UIKit
+import GradientEditor
+
+class MyViewController: UIViewController {
+    func presentGradientEditor() {
+        let editor = GradientEditorViewController(scheme: .wakeIsland) { result in
+            switch result {
+            case .saved(let scheme):
+                self.saveGradient(scheme)
+            case .cancelled:
+                print("User cancelled")
+            }
+            self.dismiss(animated: true)
+        }
+
+        // Present modally with navigation controller
+        let nav = UINavigationController(rootViewController: editor)
+        present(nav, animated: true)
+    }
+}
+```
+
+**Delegate Pattern:**
+```swift
+class MyViewController: UIViewController, GradientEditorDelegate {
+    func presentGradientEditor() {
+        let editor = GradientEditorViewController(scheme: .wakeIsland)
+        editor.delegate = self
+
+        let nav = UINavigationController(rootViewController: editor)
+        present(nav, animated: true)
+    }
+
+    func gradientEditor(_ editor: GradientEditorViewController, didSaveScheme scheme: GradientColorScheme) {
+        saveGradient(scheme)
+        dismiss(animated: true)
+    }
+
+    func gradientEditorDidCancel(_ editor: GradientEditorViewController) {
+        dismiss(animated: true)
+    }
+}
+```
+
+### AppKit Usage (macOS)
+
+For AppKit-based Mac apps, use the AppKit `GradientEditorViewController`:
+
+```swift
+import AppKit
+import GradientEditor
+
+class MyViewController: NSViewController {
+    func presentGradientEditor() {
+        let editor = GradientEditorViewController(scheme: .wakeIsland) { result in
+            switch result {
+            case .saved(let scheme):
+                self.saveGradient(scheme)
+            case .cancelled:
+                print("User cancelled")
+            }
+            self.dismiss(editor)
+        }
+
+        // Present as sheet
+        presentAsSheet(editor)
+    }
+}
+```
+
+**Delegate Pattern:**
+```swift
+class MyViewController: NSViewController, GradientEditorDelegate {
+    func presentGradientEditor() {
+        let editor = GradientEditorViewController(scheme: .wakeIsland)
+        editor.delegate = self
+        presentAsSheet(editor)
+    }
+
+    func gradientEditor(_ editor: GradientEditorViewController, didSaveScheme scheme: GradientColorScheme) {
+        saveGradient(scheme)
+        dismiss(editor)
+    }
+
+    func gradientEditorDidCancel(_ editor: GradientEditorViewController) {
+        dismiss(editor)
     }
 }
 ```

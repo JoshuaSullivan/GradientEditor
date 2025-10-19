@@ -4,6 +4,62 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2025-10-19 - v1.1.0 Native Framework Support
+
+### UIKit and AppKit Wrappers Added 🎉
+
+**Added comprehensive native framework support** to make GradientEditor accessible to UIKit and AppKit developers without requiring SwiftUI knowledge.
+
+**New Features:**
+- ✅ **UIKit Support** (iOS/visionOS)
+  - `GradientEditorViewController` for UIKit apps
+  - `GradientEditorDelegate` protocol
+  - Completion handler and delegate callback patterns
+  - Navigation bar integration (Cancel/Save buttons)
+  - Convenience presentation methods (modal, push)
+
+- ✅ **AppKit Support** (macOS)
+  - `GradientEditorViewController` for AppKit apps
+  - `GradientEditorDelegate` protocol
+  - Completion handler and delegate callback patterns
+  - macOS-native button layout
+  - Convenience presentation methods (sheet, modal window)
+
+**Testing:**
+- Added 14 new tests for UIKit and AppKit wrappers
+- Total test count: 130 → 144 tests (100% pass rate)
+- Full concurrency safety with Swift 6 strict mode
+
+**Documentation:**
+- Added UIKit usage examples to README.md
+- Added AppKit usage examples to README.md
+- Updated TechnicalDesign.md with platform support section
+- Complete DocC documentation for all public APIs
+
+**Technical Implementation:**
+- Both wrappers use `UIHostingController`/`NSHostingController` to wrap SwiftUI views
+- Proper `@MainActor` isolation and `@Sendable` compliance
+- Platform-specific conditional compilation (`#if canImport(UIKit/AppKit)`)
+- Dual callback patterns for maximum flexibility
+
+**Files Added:**
+- `Sources/GradientEditor/UIKit/GradientEditorDelegate.swift`
+- `Sources/GradientEditor/UIKit/GradientEditorViewController.swift`
+- `Sources/GradientEditor/AppKit/AppKitGradientEditorDelegate.swift`
+- `Sources/GradientEditor/AppKit/AppKitGradientEditorViewController.swift`
+- `Tests/GradientEditorTests/UIKitTests.swift`
+- `Tests/GradientEditorTests/AppKitTests.swift`
+- `docs/TODO-v1.1.0.md`
+
+**Files Modified:**
+- `README.md` - Added UIKit and AppKit usage examples
+- `docs/TechnicalDesign.md` - Added platform support section
+- `docs/CHANGELOG.md` - This entry
+
+**Status:** v1.1.0 complete. Full native framework support across iOS, visionOS, and macOS.
+
+---
+
 ## 2025-10-19 - v1.0.0 Release Finalization
 
 ### Release Preparation Complete ✅

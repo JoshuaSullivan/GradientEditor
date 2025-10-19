@@ -12,6 +12,33 @@ My goal for this project is to create an open-source framework Swift Package tha
 - I want the data structures defining the gradient to be sharable, so Codable conformance is important.
 - I want the solution to be fully compatible with Swift 6's strict concurrency checking.
 
+## Platform Support
+
+### SwiftUI (Primary)
+- The core UI is built with SwiftUI (`GradientEditView` + `GradientEditViewModel`)
+- Works natively on iOS 18+, macOS 15+, and visionOS 2+
+- Provides the most direct integration path for modern Swift apps
+
+### UIKit Wrapper (iOS/visionOS)
+- `GradientEditorViewController` provides a UIKit-native interface
+- Wraps the SwiftUI implementation using `UIHostingController`
+- Supports both completion handler and delegate callback patterns
+- Includes navigation bar integration (Cancel/Save buttons)
+- Provides convenience methods for modal and push presentation
+
+### AppKit Wrapper (macOS)
+- `GradientEditorViewController` provides an AppKit-native interface
+- Wraps the SwiftUI implementation using `NSHostingController`
+- Supports both completion handler and delegate callback patterns
+- Includes custom button layout for macOS conventions
+- Provides convenience methods for sheet and modal window presentation
+
+### Progressive Disclosure
+All three interfaces follow the principle of progressive disclosure:
+- Simple initialization for basic use cases
+- Optional delegate/completion patterns for different developer preferences
+- Convenience presentation methods that handle common scenarios
+
 ## User Interface
 
 ### General Rules
