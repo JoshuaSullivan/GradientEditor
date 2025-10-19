@@ -20,12 +20,6 @@ struct ColorStopEditorView: View {
     
     var body: some View {
         VStack {
-            // Show preview gradient in compact height (landscape on phone)
-            if verticalSizeClass == .compact {
-                gradientPreview
-                    .padding(.bottom, 8)
-            }
-
             HStack {
                 Button(action: {
                     viewModel.prevTapped()
@@ -70,24 +64,30 @@ struct ColorStopEditorView: View {
 
                 Spacer()
 
-                Button {
-                    viewModel.duplicateTapped()
-                } label: {
-                    Image(systemName: "plus.square.on.square")
-                }
-                .accessibilityLabel(AccessibilityLabels.stopEditorDuplicate)
-                .accessibilityHint(AccessibilityHints.stopEditorDuplicate)
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorDuplicate)
+                HStack(spacing: 16) {
+                    Button {
+                        viewModel.duplicateTapped()
+                    } label: {
+                        Image(systemName: "plus.square.on.square")
+                            .font(.title2)
+                            .frame(minWidth: 44, minHeight: 44)
+                    }
+                    .accessibilityLabel(AccessibilityLabels.stopEditorDuplicate)
+                    .accessibilityHint(AccessibilityHints.stopEditorDuplicate)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorDuplicate)
 
-                Button(role: .destructive) {
-                    viewModel.deleteTapped()
-                } label: {
-                    Image(systemName: "trash")
+                    Button(role: .destructive) {
+                        viewModel.deleteTapped()
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.title2)
+                            .frame(minWidth: 44, minHeight: 44)
+                    }
+                    .disabled(!viewModel.canDelete)
+                    .accessibilityLabel(AccessibilityLabels.stopEditorDelete)
+                    .accessibilityHint(AccessibilityHints.stopEditorDelete)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorDelete)
                 }
-                .disabled(!viewModel.canDelete)
-                .accessibilityLabel(AccessibilityLabels.stopEditorDelete)
-                .accessibilityHint(AccessibilityHints.stopEditorDelete)
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorDelete)
             }
 
             Picker(selection: $viewModel.isSingleColorStop) {
@@ -117,6 +117,10 @@ struct ColorStopEditorView: View {
             }
 
             Spacer()
+
+            // Gradient preview at bottom
+            gradientPreview
+                .padding(.top, 8)
         }
         .padding()
         .accessibilityElement(children: .contain)
