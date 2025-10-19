@@ -23,7 +23,7 @@
 - [x] Updated test count (105 → 127 → 133 tests)
 - [x] Updated test suite count (7 → 8 suites)
 - [x] Added coverage metric (~93% business logic)
-- [ ] Add repository URL (placeholder currently: yourusername/GradientEditor)
+- [x] Add repository URL (JoshuaSullivan/GradientEditor)
 - [x] Add LICENSE file (MIT License)
 
 **README Status:**
@@ -43,8 +43,8 @@
 - [x] Documentation complete (DocC + README)
 - [x] Example app working
 - [x] LICENSE file added (MIT License)
-- [ ] Repository URL finalized in README (user decision)
-- [ ] Version number set in appropriate location (if needed)
+- [x] Repository URL finalized in README (github.com/JoshuaSullivan/GradientEditor)
+- [x] Version number set (1.0.0 in README)
 
 ### Code Quality Metrics
 - **Test Coverage:** 64.77% overall
@@ -81,10 +81,10 @@ The following features are intentionally deferred to post-1.0:
 
 - [x] Decide on license (MIT chosen)
 - [x] Create LICENSE file
-- [ ] Update README with final repository URL (user decision)
-- [ ] Create git tag for v1.0.0 (when ready for release)
-- [ ] Push to GitHub (user task)
-- [ ] Create GitHub release with release notes (user task)
+- [x] Update README with final repository URL (github.com/JoshuaSullivan/GradientEditor)
+- [ ] Create git tag for v1.0.0
+- [ ] Push to GitHub
+- [ ] Create GitHub release with release notes
 
 ## Notes
 
