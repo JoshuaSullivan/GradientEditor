@@ -129,12 +129,6 @@ public struct GradientEditView: View {
         }
         .padding()
         .animation(.easeInOut, value: viewModel.isEditingStop)
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                settingsButton
-                addStopButton
-            }
-        }
         .onChange(of: viewModel.isEditingStop) { _, isEditing in
             if isCompactWidth {
                 showEditorSheet = isEditing
@@ -199,25 +193,14 @@ public struct GradientEditView: View {
 
             Spacer()
 
-            // Controls (only show in compact width when not editing, since toolbar handles regular width)
-            if isCompactWidth && !viewModel.isEditingStop {
-                controlButtons(orientation: geometry.orientation)
-            }
+            // Controls
+            controlButtons(orientation: geometry.orientation)
         }
     }
 
     @ViewBuilder
     private func horizontalGradientLayout(geometry: GradientLayoutGeometry) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Controls at top in landscape (only show in compact width when not editing, since toolbar handles regular width)
-            if isCompactWidth && !viewModel.isEditingStop {
-                HStack {
-                    Spacer()
-                    controlButtons(orientation: geometry.orientation)
-                    Spacer()
-                }
-            }
-
+        VStack(alignment: .trailing, spacing: 0) {
             Spacer()
 
             // Gradient strip with stops
@@ -233,6 +216,11 @@ public struct GradientEditView: View {
             )
 
             Spacer()
+
+            // Controls at bottom-trailing in landscape
+            controlButtons(orientation: geometry.orientation)
+                .padding(.bottom, 8)
+                .padding(.trailing, 16)
         }
     }
 

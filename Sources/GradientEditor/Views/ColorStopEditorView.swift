@@ -21,18 +21,32 @@ struct ColorStopEditorView: View {
     var body: some View {
         VStack {
             HStack {
-                Button(action: {
-                    viewModel.prevTapped()
-                }, label: {
-                    Image(systemName: "chevron.backward")
-                        .font(.title2)
-                })
-                .accessibilityLabel(AccessibilityLabels.stopEditorPrev)
-                .accessibilityHint(AccessibilityHints.stopEditorPrev)
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorPrev)
+                // Navigation buttons grouped on leading edge
+                HStack(spacing: 16) {
+                    Button(action: {
+                        viewModel.prevTapped()
+                    }, label: {
+                        Image(systemName: "chevron.backward")
+                            .font(.title2)
+                    })
+                    .accessibilityLabel(AccessibilityLabels.stopEditorPrev)
+                    .accessibilityHint(AccessibilityHints.stopEditorPrev)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorPrev)
+
+                    Button(action: {
+                        viewModel.nextTapped()
+                    }, label: {
+                        Image(systemName: "chevron.forward")
+                            .font(.title2)
+                    })
+                    .accessibilityLabel(AccessibilityLabels.stopEditorNext)
+                    .accessibilityHint(AccessibilityHints.stopEditorNext)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorNext)
+                }
 
                 Spacer()
 
+                // Close button on trailing edge
                 Button(action: {
                     viewModel.closeTapped()
                 }, label: {
@@ -41,18 +55,6 @@ struct ColorStopEditorView: View {
                 })
                 .accessibilityLabel(AccessibilityLabels.stopEditorClose)
                 .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorClose)
-
-                Spacer()
-
-                Button(action: {
-                    viewModel.nextTapped()
-                }, label: {
-                    Image(systemName: "chevron.forward")
-                        .font(.title2)
-                })
-                .accessibilityLabel(AccessibilityLabels.stopEditorNext)
-                .accessibilityHint(AccessibilityHints.stopEditorNext)
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorNext)
             }
             .padding(.bottom)
             HStack {
@@ -120,7 +122,7 @@ struct ColorStopEditorView: View {
 
             // Gradient preview at bottom
             gradientPreview
-                .padding(.top, 8)
+                .padding(.vertical, 4)
         }
         .padding()
         .accessibilityElement(children: .contain)
@@ -130,10 +132,20 @@ struct ColorStopEditorView: View {
     // MARK: - Gradient Preview
 
     private var gradientPreview: some View {
-        Rectangle()
-            .fill(gradientFill)
-            .frame(height: 40)
-            .cornerRadius(8)
+        GeometryReader { geometry in
+            Rectangle()
+                .fill(gradientFill)
+                .frame(height: 40)
+                .cornerRadius(8)
+                .overlay(
+                    // Position indicator line
+                    Rectangle()
+                        .fill(Color.white)
+                        .frame(width: 1, height: 56) // 40pt strip + 8pt above + 8pt below
+                        .offset(x: geometry.size.width * viewModel.position - geometry.size.width / 2, y: 0)
+                )
+        }
+        .frame(height: 40)
     }
 
     private var gradientFill: LinearGradient {

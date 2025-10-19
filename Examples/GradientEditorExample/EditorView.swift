@@ -3,12 +3,12 @@ import GradientEditor
 
 struct EditorView: View {
     let scheme: GradientColorScheme
-    let onComplete: (GradientEditorResult) -> Void
+    let onComplete: @Sendable (GradientEditorResult) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: GradientEditViewModel
 
-    init(scheme: GradientColorScheme, onComplete: @escaping (GradientEditorResult) -> Void) {
+    init(scheme: GradientColorScheme, onComplete: @escaping @Sendable (GradientEditorResult) -> Void) {
         self.scheme = scheme
         self.onComplete = onComplete
 
