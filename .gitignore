@@ -92,3 +92,7 @@ xcuserdata
 
 ### Claude ###
 .claude/
+
+### Documentation ###
+# Ignore TODO tracking files (use GitHub Issues instead)
+docs/TODO-*.md
