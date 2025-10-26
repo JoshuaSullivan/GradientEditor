@@ -6,6 +6,14 @@ A SwiftUI package for editing color gradients with an intuitive, gesture-driven 
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%2018+%20%7C%20visionOS%202+%20%7C%20macOS%2015+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/images/gradient-editor.png" width="250" alt="Main gradient editor interface">
+  <img src="docs/images/stop-editor.png" width="250" alt="Color stop editor">
+  <img src="docs/images/gradient-properties.png" width="250" alt="Gradient settings">
+</p>
+
 ## Features
 
 - ✨ **Interactive Gradient Editing** - Drag color stops, adjust positions, modify colors
