@@ -4,6 +4,57 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2025-10-27 - Pinch-to-Zoom Improvement
+
+### Fixed Pinch Gesture Center Point Behavior 🎯
+
+**Issue:** When using pinch-to-zoom on the gradient strip, the zoom always occurred from the gradient's zero point, regardless of where the user placed their fingers. This made it difficult to zoom in on a specific area of the gradient.
+
+**Solution:** Implemented location-aware pinch gesture that zooms from the center of the pinch gesture, similar to how mapping applications work. The gradient now stays centered on the point where the user's fingers are positioned during the pinch.
+
+**Implementation:**
+- Created `PinchGestureModifier` with platform-specific gesture recognizers
+  - iOS/visionOS: Uses `UIPinchGestureRecognizer` to capture scale and location
+  - macOS: Uses `NSMagnificationGestureRecognizer` for trackpad gestures
+- Modified pinch handling logic in `GradientEditView` to:
+  - Track the gradient position at the pinch center when gesture begins
+  - Dynamically adjust pan offset during zoom to keep that position stationary
+  - Calculate relative position of pinch center in view coordinates
+  - Maintain smooth zoom experience from 100% to 400%
+- Added proper `@MainActor` isolation for AppKit gesture handling
+
+**Math Behind the Fix:**
+The key insight is that when zooming, we want to keep a specific gradient position (0.0-1.0) at the same screen location. The algorithm:
+1. When pinch begins, record the gradient position under the gesture center
+2. During zoom, calculate the new visible range for the zoom level
+3. Adjust pan offset so the recorded gradient position stays at the same relative screen position
+4. Formula: `panOffset = (gradientPos - relativeViewPos × visibleSpan) / maxPan`
+
+**Files Added:**
+- `Sources/GradientEditor/Gestures/PinchGestureModifier.swift` - Platform-specific pinch gesture handling
+
+**Files Modified:**
+- `Sources/GradientEditor/Views/GradientEditView.swift`
+  - Added pinch state tracking (scale, location, active state, anchor position)
+  - Implemented `handlePinchChange()` with gradient position preservation logic
+  - Implemented `handlePinchEnd()` to finalize zoom/pan state
+  - Applied `.onPinch()` modifier to gradient strip views
+
+**Testing:**
+- All 144 tests passing (100% pass rate)
+- Zero compiler warnings
+- Verified on both iOS and macOS platforms
+
+**User Experience Improvement:**
+- ✅ Zoom now centers on where user's fingers are placed
+- ✅ Smooth, predictable zoom behavior matching user expectations
+- ✅ Easier to zoom in on specific color stops or gradient regions
+- ✅ Consistent behavior across iOS, visionOS, and macOS
+
+**Status:** Pinch-to-zoom now works like mapping apps, providing intuitive zoom-to-point behavior.
+
+---
+
 ## 2025-10-19 - v1.1.0 Native Framework Support
 
 ### UIKit and AppKit Wrappers Added 🎉

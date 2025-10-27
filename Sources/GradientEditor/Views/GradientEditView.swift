@@ -52,6 +52,12 @@ public struct GradientEditView: View {
     @State private var activeZoom: CGFloat
     @State private var activePan: CGFloat
 
+    // Pinch gesture state
+    @State private var pinchScale: CGFloat = 1.0
+    @State private var pinchLocation: CGPoint = .zero
+    @State private var pinchActive: Bool = false
+    @State private var pinchAnchorGradientPosition: CGFloat?
+
     // Temporary state for metadata editing
     @State private var editingName: String = ""
     @State private var editingDescription: String = ""
@@ -142,6 +148,14 @@ public struct GradientEditView: View {
             activePan = newPan
             basePan = newPan
         }
+        .onChange(of: pinchScale) { _, _ in
+            handlePinchChange()
+        }
+        .onChange(of: pinchLocation) { _, _ in
+            if pinchActive {
+                handlePinchChange()
+            }
+        }
         .sheet(isPresented: $showMetadataEditor) {
             SchemeMetadataEditorView(
                 name: $editingName,
@@ -190,6 +204,12 @@ public struct GradientEditView: View {
                 pinchGesture: pinchGesture,
                 panGesture: panGesture
             )
+            .onPinch(
+                scale: $pinchScale,
+                location: $pinchLocation,
+                isActive: $pinchActive,
+                onEnded: handlePinchEnd
+            )
 
             Spacer()
 
@@ -213,6 +233,12 @@ public struct GradientEditView: View {
                 isDraggingHandle: $isDraggingHandle,
                 pinchGesture: pinchGesture,
                 panGesture: panGesture
+            )
+            .onPinch(
+                scale: $pinchScale,
+                location: $pinchLocation,
+                isActive: $pinchActive,
+                onEnded: handlePinchEnd
             )
 
             Spacer()
@@ -304,20 +330,11 @@ public struct GradientEditView: View {
             .updating($magnification) { value, state, _ in
                 state = value
             }
-            .onChanged { [self] value in
-                let newZoom = baseZoom * value
-                activeZoom = max(1.0, min(4.0, newZoom))
-
-                // Reset pan if zoom is back to 100%
-                if activeZoom == 1.0 {
-                    activePan = 0.0
-                }
+            .onChanged { _ in
+                // No-op: using UIKit pinch gesture instead
             }
-            .onEnded { [self] value in
-                let newZoom = baseZoom * value
-                viewModel.updateZoom(newZoom)
-                activeZoom = viewModel.zoomLevel
-                baseZoom = viewModel.zoomLevel
+            .onEnded { _ in
+                // No-op: using UIKit pinch gesture instead
             }
     }
 
@@ -339,6 +356,50 @@ public struct GradientEditView: View {
                 viewModel.updatePan(activePan)
                 basePan = activePan
             }
+    }
+
+    // MARK: - Pinch Gesture Handling
+
+    /// Handles changes in the pinch gesture scale and location.
+    private func handlePinchChange() {
+        guard let geom = currentGeometry else { return }
+
+        // On first pinch, calculate the gradient position at the pinch center
+        if pinchAnchorGradientPosition == nil {
+            let coord = geom.orientation == .vertical ? pinchLocation.y : pinchLocation.x
+            pinchAnchorGradientPosition = geom.gradientPosition(from: coord)
+        }
+
+        guard let anchorGradPos = pinchAnchorGradientPosition else { return }
+
+        // Calculate new zoom level
+        let newZoom = max(1.0, min(4.0, baseZoom * pinchScale))
+        activeZoom = newZoom
+
+        // Calculate the relative position of the pinch center in the view (0.0 to 1.0)
+        let coord = geom.orientation == .vertical ? pinchLocation.y : pinchLocation.x
+        let relativePosition = coord / geom.stripLength
+
+        // Adjust pan to keep the anchor gradient position at the same relative view position
+        if newZoom > 1.0 {
+            let visibleSpan = 1.0 / newZoom
+            let desiredVisibleStart = anchorGradPos - (relativePosition * visibleSpan)
+            let maxPan = 1.0 - visibleSpan
+            let newPan = desiredVisibleStart / maxPan
+
+            activePan = max(0.0, min(1.0, newPan))
+        } else {
+            activePan = 0.0
+        }
+    }
+
+    /// Handles the end of the pinch gesture.
+    private func handlePinchEnd() {
+        viewModel.updateZoom(activeZoom)
+        viewModel.updatePan(activePan)
+        baseZoom = viewModel.zoomLevel
+        basePan = viewModel.panOffset
+        pinchAnchorGradientPosition = nil
     }
 
 }
