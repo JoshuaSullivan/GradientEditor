@@ -113,24 +113,9 @@ struct SchemeRow: View {
 struct GradientThumbnail: View {
     let colorMap: ColorMap
 
-    private var gradient: LinearGradient {
-        let gradStops = colorMap.stops.flatMap { cStop in
-            switch cStop.type {
-            case .single(let color):
-                return [Gradient.Stop(color: Color(cgColor: color), location: cStop.position)]
-            case .dual(let colorA, let colorB):
-                return [
-                    Gradient.Stop(color: Color(cgColor: colorA), location: cStop.position),
-                    Gradient.Stop(color: Color(cgColor: colorB), location: cStop.position)
-                ]
-            }
-        }
-        return LinearGradient(stops: gradStops, startPoint: .leading, endPoint: .trailing)
-    }
-
     var body: some View {
         Rectangle()
-            .fill(gradient)
+            .fill(colorMap.linearGradient())
     }
 }
 

@@ -2,7 +2,7 @@
 
 A SwiftUI package for editing color gradients with an intuitive, gesture-driven interface.
 
-![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg)
+![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%2018+%20%7C%20visionOS%202+%20%7C%20macOS%2015+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
@@ -22,7 +22,7 @@ A SwiftUI package for editing color gradients with an intuitive, gesture-driven 
 - 📱 **Adaptive Layout** - Automatic adaptation to device size and orientation
 - ♿️ **Fully Accessible** - Complete VoiceOver and Dynamic Type support
 - 🌐 **Localized** - Ready for internationalization with string catalog
-- 🧪 **Thoroughly Tested** - 144 tests with 100% pass rate
+- 🧪 **Thoroughly Tested** - 163 tests with 100% pass rate
 - 🎯 **Swift 6 Strict Concurrency** - Thread-safe with `@MainActor` isolation
 
 ## Quick Start
@@ -218,6 +218,110 @@ GradientEditor includes several preset gradients:
 
 Access all presets: `GradientColorScheme.allPresets`
 
+## Using Gradients in Your App
+
+After editing a gradient, you can easily convert it to platform-specific gradient types:
+
+### SwiftUI Gradients
+
+```swift
+case .saved(let scheme):
+    // Linear gradient (horizontal by default)
+    let linear = scheme.linearGradient()
+    Rectangle().fill(linear)
+
+    // Vertical gradient
+    let vertical = scheme.linearGradient(startPoint: .top, endPoint: .bottom)
+    Rectangle().fill(vertical)
+
+    // Radial gradient
+    let radial = scheme.radialGradient(
+        center: .center,
+        startRadius: 0,
+        endRadius: 200
+    )
+    Circle().fill(radial)
+
+    // Angular/Conic gradient
+    let angular = scheme.angularGradient(center: .center)
+    Circle().fill(angular)
+```
+
+### UIKit - CAGradientLayer
+
+```swift
+case .saved(let scheme):
+    // Create gradient layer for UIView
+    let gradientLayer = scheme.caGradientLayer(
+        frame: view.bounds,
+        type: .axial,
+        startPoint: CGPoint(x: 0, y: 0),    // top-left
+        endPoint: CGPoint(x: 1, y: 1)       // bottom-right
+    )
+    view.layer.insertSublayer(gradientLayer, at: 0)
+
+    // Radial gradient
+    let radial = scheme.caGradientLayer(
+        frame: view.bounds,
+        type: .radial,
+        startPoint: CGPoint(x: 0.5, y: 0.5),
+        endPoint: CGPoint(x: 1, y: 1)
+    )
+
+    // Conic gradient
+    let conic = scheme.caGradientLayer(
+        frame: view.bounds,
+        type: .conic,
+        startPoint: CGPoint(x: 0.5, y: 0.5)
+    )
+```
+
+### AppKit - NSGradient
+
+```swift
+case .saved(let scheme):
+    guard let gradient = scheme.nsGradient() else { return }
+
+    // Draw linear gradient in NSView
+    let startPoint = NSPoint(x: 0, y: bounds.height)
+    let endPoint = NSPoint(x: bounds.width, y: bounds.height)
+    gradient.draw(from: startPoint, to: endPoint, options: [])
+
+    // Draw radial gradient
+    let center = NSPoint(x: bounds.midX, y: bounds.midY)
+    gradient.draw(
+        fromCenter: center,
+        radius: 0,
+        toCenter: center,
+        radius: bounds.width / 2,
+        options: []
+    )
+```
+
+**Note:** All conversion methods work on both `GradientColorScheme` and `ColorMap`. Dual-color stops create hard transitions in SwiftUI and CAGradientLayer. For NSGradient, hard transitions are approximated by placing both colors extremely close together (0.0001 apart).
+
+### Advanced: Component Accessors
+
+For advanced use cases, you can access the raw color/location arrays:
+
+```swift
+// SwiftUI - get raw Gradient.Stop array
+let stops = scheme.gradientStops()
+let customGradient = LinearGradient(stops: stops, startPoint: .topLeading, endPoint: .bottomTrailing)
+
+// UIKit - get raw CGColor and NSNumber arrays
+let (colors, locations) = scheme.caGradientComponents()
+let layer = CAGradientLayer()
+layer.colors = colors
+layer.locations = locations
+layer.type = .conic  // Apply custom configuration
+
+// AppKit - get raw NSColor and CGFloat arrays
+if let (colors, locations) = scheme.nsGradientComponents() {
+    let gradient = NSGradient(colors: colors, atLocations: locations, colorSpace: .sRGB)
+}
+```
+
 ## Gestures
 
 ### Gradient Preview
@@ -261,7 +365,7 @@ All user-facing strings are localized via `Localizable.xcstrings`. The package i
 ## Requirements
 
 - iOS 18.0+ / visionOS 2.0+ / macOS 15.0+
-- Swift 6.2+
+- Swift 6.0+
 - Xcode 16.0+
 
 ## Architecture
