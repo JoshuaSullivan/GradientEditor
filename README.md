@@ -33,7 +33,7 @@ Add GradientEditor to your project using Swift Package Manager:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/JoshuaSullivan/GradientEditor.git", from: "1.0.0")
+    .package(url: "https://github.com/JoshuaSullivan/GradientEditor.git", from: "1.3.0")
 ]
 ```
 
@@ -385,8 +385,8 @@ swift test
 ```
 
 **Test Coverage:**
-- 133 tests across 8 suites
-- Models, view models, geometry, views, integration
+- 163 tests across 10 suites
+- Models, view models, geometry, views, integration, platform conversions
 - 100% pass rate
 - ~93% coverage of business logic
 
