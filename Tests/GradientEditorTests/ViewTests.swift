@@ -105,7 +105,11 @@ struct ViewTests {
             ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
         ]
 
-        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
+        _ = ColorStopEditorView(
+            viewModel: viewModel,
+            gradientStops: gradientStops,
+            colorProvider: DefaultColorProvider()
+        )
 
         #expect(viewModel.isSingleColorStop == true)
         #expect(viewModel.position == 0.5)
@@ -124,7 +128,11 @@ struct ViewTests {
             ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
         ]
 
-        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
+        _ = ColorStopEditorView(
+            viewModel: viewModel,
+            gradientStops: gradientStops,
+            colorProvider: DefaultColorProvider()
+        )
 
         #expect(viewModel.isSingleColorStop == false)
         #expect(viewModel.position == 0.3)
@@ -141,7 +149,11 @@ struct ViewTests {
             ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
         ]
 
-        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
+        _ = ColorStopEditorView(
+            viewModel: viewModel,
+            gradientStops: gradientStops,
+            colorProvider: DefaultColorProvider()
+        )
 
         #expect(viewModel.canDelete == true)
     }
@@ -157,7 +169,11 @@ struct ViewTests {
             ColorStop(position: 1.0, type: .single(CGColor(red: 1, green: 1, blue: 1, alpha: 1)))
         ]
 
-        _ = ColorStopEditorView(viewModel: viewModel, gradientStops: gradientStops)
+        _ = ColorStopEditorView(
+            viewModel: viewModel,
+            gradientStops: gradientStops,
+            colorProvider: DefaultColorProvider()
+        )
 
         #expect(viewModel.canDelete == false)
     }

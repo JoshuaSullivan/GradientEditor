@@ -4,6 +4,7 @@ struct ColorStopEditorView: View {
 
     @Bindable var viewModel: ColorStopEditorViewModel
     let gradientStops: [ColorStop]
+    let colorProvider: any ColorProvider
 
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
@@ -102,20 +103,41 @@ struct ColorStopEditorView: View {
             .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorTypePicker)
 
             if viewModel.isSingleColorStop {
-                ColorPicker(selection: $viewModel.firstcolor) {
-                    Text(LocalizedString.editorColorLabel)
-                }
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorColorPicker)
+                colorProvider.colorView(
+                    currentColor: viewModel.firstcolor,
+                    onColorChange: { @MainActor newColor in
+                        viewModel.firstcolor = newColor
+                    },
+                    context: ColorEditContext(
+                        colorIndex: .first,
+                        isSingleColorStop: true,
+                        accessibilityLabel: LocalizedString.editorColorLabel
+                    )
+                )
             } else {
-                ColorPicker(selection:  $viewModel.firstcolor) {
-                    Text(LocalizedString.editorFirstColorLabel)
-                }
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorFirstColorPicker)
+                colorProvider.colorView(
+                    currentColor: viewModel.firstcolor,
+                    onColorChange: { @MainActor newColor in
+                        viewModel.firstcolor = newColor
+                    },
+                    context: ColorEditContext(
+                        colorIndex: .first,
+                        isSingleColorStop: false,
+                        accessibilityLabel: LocalizedString.editorFirstColorLabel
+                    )
+                )
 
-                ColorPicker(selection: $viewModel.secondColor) {
-                    Text(LocalizedString.editorSecondColorLabel)
-                }
-                .accessibilityIdentifier(AccessibilityIdentifiers.stopEditorSecondColorPicker)
+                colorProvider.colorView(
+                    currentColor: viewModel.secondColor,
+                    onColorChange: { @MainActor newColor in
+                        viewModel.secondColor = newColor
+                    },
+                    context: ColorEditContext(
+                        colorIndex: .second,
+                        isSingleColorStop: false,
+                        accessibilityLabel: LocalizedString.editorSecondColorLabel
+                    )
+                )
             }
 
             Spacer()
@@ -172,6 +194,7 @@ struct ColorStopEditorView: View {
             ColorStop(position: 0.0, type: .single(.red)),
             ColorStop(position: 0.5, type: .dual(.blue, .green)),
             ColorStop(position: 1.0, type: .single(.purple))
-        ]
+        ],
+        colorProvider: DefaultColorProvider()
     )
 }

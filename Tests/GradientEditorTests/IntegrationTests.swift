@@ -2,6 +2,7 @@ import Testing
 import Foundation
 import CoreGraphics
 import Combine
+import SwiftUI
 @testable import GradientEditor
 
 @Suite("Integration Tests")
@@ -519,5 +520,136 @@ struct IntegrationTests {
         }.count
 
         #expect(visibleStopCount >= 1) // At least one stop should be visible
+    }
+
+    // MARK: - ColorProvider Integration Tests
+
+    /// Mock color provider for testing
+    private struct MockColorProvider: ColorProvider {
+        func colorView(
+            currentColor: CGColor,
+            onColorChange: @escaping @MainActor @Sendable (CGColor) -> Void,
+            context: ColorEditContext
+        ) -> AnyView {
+            return AnyView(
+                DefaultColorProvider().colorView(
+                    currentColor: currentColor,
+                    onColorChange: onColorChange,
+                    context: context
+                )
+            )
+        }
+    }
+
+    @Test("GradientEditViewModel accepts custom ColorProvider")
+    func viewModelAcceptsCustomProvider() {
+        let mockProvider = MockColorProvider()
+
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+
+        let viewModel = GradientEditViewModel(
+            scheme: scheme,
+            colorProvider: mockProvider
+        )
+
+        // Verify viewModel was created successfully with custom provider
+        #expect(viewModel.colorStops.count == 2)
+        #expect(viewModel.colorProvider is MockColorProvider)
+    }
+
+    @Test("GradientEditViewModel uses DefaultColorProvider by default")
+    func viewModelUsesDefaultProvider() {
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+
+        // Create without specifying provider (tests default parameter)
+        let viewModel = GradientEditViewModel(scheme: scheme)
+
+        // Verify viewModel uses default provider
+        #expect(viewModel.colorStops.count == 2)
+        #expect(viewModel.colorProvider is DefaultColorProvider)
+    }
+
+    @Test("ColorStopEditorView can be created with custom ColorProvider")
+    func editorViewAcceptsCustomProvider() {
+        let mockProvider = MockColorProvider()
+        let stop = ColorStop(position: 0.5, type: .single(.red))
+        let viewModel = ColorStopEditorViewModel(colorStop: stop)
+        let gradientStops = [
+            ColorStop(position: 0.0, type: .single(.red)),
+            stop,
+            ColorStop(position: 1.0, type: .single(.blue))
+        ]
+
+        // Create view with custom provider
+        _ = ColorStopEditorView(
+            viewModel: viewModel,
+            gradientStops: gradientStops,
+            colorProvider: mockProvider
+        )
+
+        // Verify view was created successfully
+        #expect(viewModel.position == 0.5)
+    }
+
+    @Test("Custom ColorProvider works in complete workflow")
+    func customProviderFullWorkflow() {
+        let mockProvider = MockColorProvider()
+
+        let scheme = GradientColorScheme(
+            name: "Test",
+            description: "Test",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.red)),
+                ColorStop(position: 1.0, type: .single(.blue))
+            ])
+        )
+
+        let capture = ResultCapture()
+        let viewModel = GradientEditViewModel(
+            scheme: scheme,
+            colorProvider: mockProvider
+        ) { result in
+            capture.result = result
+        }
+
+        // Add a stop
+        viewModel.addTapped()
+        #expect(viewModel.colorStops.count == 3)
+
+        // Select the new stop
+        let newStop = viewModel.colorStops[1]
+        viewModel.stopTapped(newStop.id)
+        #expect(viewModel.isEditingStop == true)
+
+        // Create the editor view with custom provider
+        _ = ColorStopEditorView(
+            viewModel: viewModel.colorStopViewModel,
+            gradientStops: viewModel.colorStops,
+            colorProvider: mockProvider
+        )
+
+        // Save
+        viewModel.saveGradient()
+        #expect(capture.result != nil)
+
+        if case .saved(let savedScheme) = capture.result {
+            #expect(savedScheme.colorMap.stops.count == 3)
+        } else {
+            Issue.record("Expected saved result")
+        }
     }
 }

@@ -14,7 +14,7 @@ import Combine
 /// ## Topics
 ///
 /// ### Creating a View Model
-/// - ``init(scheme:onComplete:)``
+/// - ``init(scheme:colorProvider:onComplete:)``
 ///
 /// ### State Properties
 /// - ``scheme``
@@ -24,6 +24,7 @@ import Combine
 /// - ``zoomLevel``
 /// - ``panOffset``
 /// - ``gradientFill``
+/// - ``colorProvider``
 ///
 /// ### Stop Management
 /// - ``addTapped()``
@@ -87,7 +88,13 @@ public class GradientEditViewModel {
     }
     
     public var colorStopViewModel: ColorStopEditorViewModel = ColorStopEditorViewModel(colorStop: .defaultStart)
-    
+
+    /// The color provider used to generate color selection UI.
+    ///
+    /// This provider is used by the color stop editor to create custom color picker views.
+    /// Defaults to ``DefaultColorProvider`` which uses the system ColorPicker.
+    public let colorProvider: any ColorProvider
+
     private var stops: Set<ColorStop> {
         didSet {
             colorStopViewModel.canDelete = stops.count > 2
@@ -115,6 +122,8 @@ public class GradientEditViewModel {
     ///
     /// - Parameters:
     ///   - scheme: The gradient scheme to edit.
+    ///   - colorProvider: The color provider to use for color selection UI.
+    ///                    Defaults to ``DefaultColorProvider``.
     ///   - onComplete: Optional callback invoked when editing completes with save or cancel.
     ///
     /// ## Example
@@ -130,9 +139,23 @@ public class GradientEditViewModel {
     ///     }
     /// }
     /// ```
-    public init(scheme: GradientColorScheme, onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil) {
-
+    ///
+    /// ## Custom Color Provider Example
+    /// ```swift
+    /// let viewModel = GradientEditViewModel(
+    ///     scheme: .wakeIsland,
+    ///     colorProvider: MyCustomColorProvider()
+    /// ) { result in
+    ///     // Handle result
+    /// }
+    /// ```
+    public init(
+        scheme: GradientColorScheme,
+        colorProvider: any ColorProvider = DefaultColorProvider(),
+        onComplete: (@Sendable (GradientEditorResult) -> Void)? = nil
+    ) {
         self.scheme = scheme
+        self.colorProvider = colorProvider
         self.stops = Set(scheme.colorMap.stops)
         dragHandleViewModels = scheme.colorMap.stops.map { DragHandleViewModel(colorStop: $0) }
         self.onComplete = onComplete

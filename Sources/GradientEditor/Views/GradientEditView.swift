@@ -255,7 +255,8 @@ public struct GradientEditView: View {
     private var editorView: some View {
         ColorStopEditorView(
             viewModel: viewModel.colorStopViewModel,
-            gradientStops: viewModel.colorStops
+            gradientStops: viewModel.colorStops,
+            colorProvider: viewModel.colorProvider
         )
     }
 
