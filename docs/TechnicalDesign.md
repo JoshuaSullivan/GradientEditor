@@ -70,6 +70,42 @@ All three interfaces follow the principle of progressive disclosure:
 - There should also be controls to delete the stop and duplicate it. Any stop created through duplication will appear half-way between the original stop and the next-highest positional stop. If it is the final stop being duplicated, it will instead appear half-way to the previous stop.
 - Due to screen space constraints, the presentation of this UI should be based on the size class of the view. If it is narrow (phone or split-screen iPad), then it should present over the gradient preview and be dismissable. If there is enough space, it should present next to the gradient preview.
 
+### Custom Color Selection (ColorProvider Protocol)
+
+The framework supports custom color selection UI through the `ColorProvider` protocol, enabling developers to replace the system color picker with their own implementation:
+
+#### Protocol Design
+- **ColorProvider**: Main protocol for providing custom color selection views
+- **ColorEditContext**: Provides context about which color is being edited
+  - Color index (first or second for dual stops)
+  - Stop type (single or dual)
+  - Localized accessibility label
+- **DefaultColorProvider**: Wraps the system ColorPicker (used by default)
+
+#### Implementation Approach
+- Callback-based color change pattern using closures
+- Separate `colorView()` calls for each color in dual stops
+- `@MainActor` isolation for SwiftUI view creation
+- `@Sendable` closure for Swift 6 concurrency compatibility
+
+#### Usage
+Developers can provide a custom color provider when creating the view model:
+```swift
+let viewModel = GradientEditViewModel(
+    scheme: myScheme,
+    colorProvider: MyCustomColorProvider()
+)
+```
+
+The `colorProvider` parameter has a default value of `DefaultColorProvider()`, maintaining backward compatibility with existing code.
+
+#### Use Cases
+- Brand-specific color palettes
+- Limited color selection (design system compliance)
+- Specialized color pickers (e.g., hue slider, hex input)
+- Integration with existing color management systems
+- Custom accessibility features
+
 ## Example App
 
 - I would like the package to have an example app embedded in the package that allows me to test the UI on device and allows integrators to try out the package.

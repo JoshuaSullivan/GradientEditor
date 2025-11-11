@@ -4,6 +4,118 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2025-11-11 - Custom Color Selection (ColorProvider Protocol)
+
+### Added Custom Color Picker Support 🎨
+
+**Feature:** Implemented `ColorProvider` protocol to enable developers to replace the system color picker with custom color selection UI, providing complete control over the color editing experience.
+
+**Protocol Design:**
+- **ColorProvider**: Main protocol for providing custom color selection views
+  - `colorView(currentColor:onColorChange:context:)` method returns SwiftUI view
+  - `@MainActor` isolated for SwiftUI view creation
+  - `@Sendable` closure support for Swift 6 concurrency
+- **ColorEditContext**: Provides rich context about the color being edited
+  - `colorIndex`: Which color (first or second for dual stops)
+  - `isSingleColorStop`: Whether editing single or dual color stop
+  - `accessibilityLabel`: Localized label for accessibility
+- **DefaultColorProvider**: Wraps system ColorPicker (used by default)
+  - Maintains existing behavior and accessibility
+  - Preserves all accessibility identifiers
+
+**Implementation Approach:**
+- Callback-based color change pattern using closures
+- Separate `colorView()` calls for each color in dual stops
+- Optional `colorProvider` parameter in `GradientEditViewModel` init
+- Default value maintains backward compatibility (non-breaking change)
+- Proper context passing with color index, stop type, and accessibility
+
+**Example Usage:**
+```swift
+// Define custom color provider
+struct MyHueSliderProvider: ColorProvider {
+    func colorView(
+        currentColor: CGColor,
+        onColorChange: @escaping @MainActor @Sendable (CGColor) -> Void,
+        context: ColorEditContext
+    ) -> AnyView {
+        AnyView(MyHueSlider(color: currentColor, onChange: onColorChange))
+    }
+}
+
+// Use in view model
+let viewModel = GradientEditViewModel(
+    scheme: myScheme,
+    colorProvider: MyHueSliderProvider()
+)
+```
+
+**Example Implementation:**
+- Created `HueSliderColorProvider` in demo app
+- Shows square color preview with 3pt rounded corners
+- Slider-based hue selection (0-1) with S and B fixed at 1.0
+- Sheet presentation with color preview and Save/Cancel buttons
+- Full accessibility support with labels and identifiers
+- Demonstrates real-world custom provider usage
+
+**Demo Integration:**
+- Added "ColorProvider Test" gradient to example app (blue→green)
+- New "Custom ColorProvider Demo" section in list view
+- Explanatory footer text for feature discoverability
+- Updated `EditorView` to accept optional `colorProvider` parameter
+
+**Testing:**
+- Added 11 unit tests for DefaultColorProvider (174 → 178 tests)
+- Added 4 integration tests for custom provider workflow
+- All 178 tests passing (100% pass rate)
+- Tested custom provider example in demo app
+- Zero compiler warnings
+
+**Documentation:**
+- Full DocC comments on ColorProvider protocol
+- Module-level documentation added to GradientEditor.swift
+- Updated TechnicalDesign.md with ColorProvider section
+- Example code in all documentation
+- Updated GradientEditViewModel documentation
+
+**Files Added:**
+- `Sources/GradientEditor/Protocols/ColorProvider.swift` - Protocol and context
+- `Sources/GradientEditor/Protocols/DefaultColorProvider.swift` - Default implementation
+- `Tests/GradientEditorTests/DefaultColorProviderTests.swift` - Unit tests
+- `Examples/GradientEditorExample/HueSliderColorProvider.swift` - Example implementation
+
+**Files Modified:**
+- `Sources/GradientEditor/GradientEditor.swift` - Module-level DocC documentation
+- `Sources/GradientEditor/ViewModels/GradientEditViewModel.swift` - Added colorProvider parameter
+- `Sources/GradientEditor/Views/ColorStopEditorView.swift` - Use provider instead of ColorPicker
+- `Sources/GradientEditor/Views/GradientEditView.swift` - Pass provider to editor
+- `Tests/GradientEditorTests/IntegrationTests.swift` - Added 4 new integration tests
+- `Tests/GradientEditorTests/ViewTests.swift` - Updated for colorProvider parameter
+- `Examples/GradientEditorExample/EditorView.swift` - Accept optional colorProvider
+- `Examples/GradientEditorExample/SchemeListView.swift` - Demo section and usage
+- `docs/TechnicalDesign.md` - ColorProvider feature documentation
+- `docs/CHANGELOG.md` - This entry
+
+**Use Cases:**
+- ✅ Brand-specific color palettes
+- ✅ Limited color selection (design system compliance)
+- ✅ Specialized color pickers (hue slider, hex input, etc.)
+- ✅ Integration with existing color management systems
+- ✅ Custom accessibility features
+- ✅ Alternative UI paradigms (swatches, presets, etc.)
+
+**Benefits:**
+- ✅ Complete control over color selection UI
+- ✅ Non-breaking change (default parameter maintains compatibility)
+- ✅ Type-safe protocol with full context information
+- ✅ Swift 6 concurrency compliant
+- ✅ Follows progressive disclosure principle
+- ✅ Working example provided in demo app
+
+**Status:** ColorProvider protocol complete. Developers can now provide fully custom color selection UI while maintaining accessibility and proper data flow.
+
+---
+
 ## 2025-10-27 - Platform Conversion Utilities
 
 ### Added Easy Gradient Conversion for All Platforms 🎨
