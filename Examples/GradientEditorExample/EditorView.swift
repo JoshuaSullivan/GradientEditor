@@ -8,12 +8,27 @@ struct EditorView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: GradientEditViewModel
 
-    init(scheme: GradientColorScheme, onComplete: @escaping @Sendable (GradientEditorResult) -> Void) {
+    init(
+        scheme: GradientColorScheme,
+        colorProvider: (any ColorProvider)? = nil,
+        onComplete: @escaping @Sendable (GradientEditorResult) -> Void
+    ) {
         self.scheme = scheme
         self.onComplete = onComplete
 
-        // Create view model with completion handler pre-configured
-        self._viewModel = State(initialValue: GradientEditViewModel(scheme: scheme, onComplete: onComplete))
+        // Create view model with completion handler and optional color provider
+        if let provider = colorProvider {
+            self._viewModel = State(initialValue: GradientEditViewModel(
+                scheme: scheme,
+                colorProvider: provider,
+                onComplete: onComplete
+            ))
+        } else {
+            self._viewModel = State(initialValue: GradientEditViewModel(
+                scheme: scheme,
+                onComplete: onComplete
+            ))
+        }
     }
 
     var body: some View {

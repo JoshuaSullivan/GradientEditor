@@ -5,9 +5,22 @@ struct SchemeListView: View {
     @State private var schemes: [GradientColorScheme] = GradientColorScheme.allPresets
     @State private var selectedScheme: GradientColorScheme?
     @State private var customSchemes: [GradientColorScheme] = []
+    @State private var selectedColorProviderScheme: GradientColorScheme?
 
     var allSchemes: [GradientColorScheme] {
         schemes + customSchemes
+    }
+
+    // Demo scheme for ColorProvider feature
+    private var colorProviderTestScheme: GradientColorScheme {
+        GradientColorScheme(
+            name: "ColorProvider Test",
+            description: "Demonstrates custom color picker UI using a hue slider",
+            colorMap: ColorMap(stops: [
+                ColorStop(position: 0.0, type: .single(.blue)),
+                ColorStop(position: 1.0, type: .single(.green))
+            ])
+        )
     }
 
     var body: some View {
@@ -20,6 +33,17 @@ struct SchemeListView: View {
                                 selectedScheme = scheme
                             }
                     }
+                }
+
+                Section {
+                    SchemeRow(scheme: colorProviderTestScheme)
+                        .onTapGesture {
+                            selectedColorProviderScheme = colorProviderTestScheme
+                        }
+                } header: {
+                    Text("Custom ColorProvider Demo")
+                } footer: {
+                    Text("This gradient uses a custom hue slider instead of the system color picker")
                 }
 
                 if !customSchemes.isEmpty {
@@ -48,6 +72,11 @@ struct SchemeListView: View {
             }
             .sheet(item: $selectedScheme) { scheme in
                 EditorView(scheme: scheme) { result in
+                    handleEditorResult(result, for: scheme)
+                }
+            }
+            .sheet(item: $selectedColorProviderScheme) { scheme in
+                EditorView(scheme: scheme, colorProvider: HueSliderColorProvider()) { result in
                     handleEditorResult(result, for: scheme)
                 }
             }
